@@ -845,7 +845,7 @@
         const leaderboardBody = document.getElementById('leaderboard-body');
         const leaderboardLoading = document.getElementById('leaderboard-loading');
 
-       async function fetchAndDisplayLeaderboard(shiftFilter = 'all') {
+      async function fetchAndDisplayLeaderboard(shiftFilter = 'all') {
             if (!db) return;
 
             leaderboardLoading.style.display = 'block';
@@ -858,22 +858,15 @@
                     [shiftFilter];
 
                 for (const shiftId of shiftsToFetch) {
-               const usersSnapshot = await db.collection('userResponses').doc(shiftId).collection('users').get({ source: 'server' });
+                   const usersSnapshot = await db.collection('userResponses').doc(shiftId).collection('users').get({ source: 'server' });
                     usersSnapshot.forEach(doc => {
                         const userData = doc.data();
                         if (userData.summary && userData.summary.rawMarks) {
-                            
-                            // ======================= START: REQUIRED CHANGE =======================
-                            
-                            // 1. उपयोगकर्ता के सही, गलत, छोड़े गए और कुल वैध प्रश्नों की संख्या प्राप्त करें।
                             const correct = parseInt(userData.summary.correct) || 0;
                             const incorrect = parseInt(userData.summary.incorrect) || 0;
                             const skipped = parseInt(userData.summary.skipped) || 0;
-                            // 'validQuestions' को उपयोगकर्ता के सारांश से प्राप्त करें।
                             const validQuestions = parseInt(userData.summary.validQuestions) || 0;
 
-                            // 2. शर्त की जाँच करें: क्या उपयोगकर्ता ने सभी वैध प्रश्नों को हल किया है?
-                            // यदि योग कुल वैध प्रश्नों के बराबर है, तभी डेटा दिखाएं।
                             if ((correct + incorrect + skipped) === validQuestions) {
                                 allUsers.push({
                                     name: userData.name || 'Not Provided',
@@ -884,19 +877,19 @@
                                     shift: shiftId
                                 });
                             }
-                            
-                            // ======================== END: REQUIRED CHANGE ========================
                         }
                     });
                 }
                 
-                // 1. उन यूजर्स को फ़िल्टर करें जिनके रॉ मार्क्स 40 और 180 के बीच हैं
-                const filteredUsers = allUsers.filter(user => user.rawMarks >= 40 && user.rawMarks <= 180);
+                // ======================= START: REQUIRED CHANGE =======================
+                // उन यूजर्स को फ़िल्टर करें जिनके रॉ मार्क्स 180 या उससे कम हैं (40 की शर्त हटा दी गई है)।
+                const filteredUsers = allUsers.filter(user => user.rawMarks <= 180);
+                // ======================== END: REQUIRED CHANGE ========================
 
-                // 2. फ़िल्टर किए गए यूजर्स को रॉ मार्क्स के अनुसार Sort करें
+                // फ़िल्टर किए गए यूजर्स को रॉ मार्क्स के अनुसार Sort करें
                 filteredUsers.sort((a, b) => b.rawMarks - a.rawMarks);
 
-                // 3. फ़िल्टर किए गए यूजर्स का उपयोग करके टेबल बनाएं और सिंपल स्टाइलिंग रखें
+                // फ़िल्टर किए गए यूजर्स का उपयोग करके टेबल बनाएं और सिंपल स्टाइलिंग रखें
                 leaderboardBody.innerHTML = filteredUsers.map((user, index) => `
     <tr style="border-bottom: 1px solid var(--border-color);">
         <td style="padding: 0.75rem;">${index + 1}</td>
