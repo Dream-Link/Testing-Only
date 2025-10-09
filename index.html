@@ -867,7 +867,9 @@
                             const skipped = parseInt(userData.summary.skipped) || 0;
                             const validQuestions = parseInt(userData.summary.validQuestions) || 0;
 
-                            if ((correct + incorrect + skipped) === validQuestions) {
+                            // ======================= START: REQUIRED CHANGE =======================
+                            // यहाँ हमने यह सुनिश्चित किया है कि validQuestions 0 से ज़्यादा हो।
+                            if (validQuestions > 0 && (correct + incorrect + skipped) === validQuestions) {
                                 allUsers.push({
                                     name: userData.name || 'Not Provided',
                                     rawMarks: parseFloat(userData.summary.rawMarks) || 0,
@@ -877,32 +879,26 @@
                                     shift: shiftId
                                 });
                             }
+                            // ======================== END: REQUIRED CHANGE ========================
                         }
                     });
                 }
                 
-                // ======================= START: REQUIRED CHANGE =======================
-                // उन यूजर्स को फ़िल्टर करें जिनके रॉ मार्क्स 180 या उससे कम हैं (40 की शर्त हटा दी गई है)।
+                // उन यूजर्स को फ़िल्टर करें जिनके रॉ मार्क्स 180 या उससे कम हैं।
                 const filteredUsers = allUsers.filter(user => user.rawMarks <= 180);
-                // ======================== END: REQUIRED CHANGE ========================
 
                 // फ़िल्टर किए गए यूजर्स को रॉ मार्क्स के अनुसार Sort करें
                 filteredUsers.sort((a, b) => b.rawMarks - a.rawMarks);
 
-                // फ़िल्टर किए गए यूजर्स का उपयोग करके टेबल बनाएं और सिंपल स्टाइलिंग रखें
+                // फ़िल्टर किए गए यूजर्स का उपयोग करके टेबल बनाएं
                 leaderboardBody.innerHTML = filteredUsers.map((user, index) => `
     <tr style="border-bottom: 1px solid var(--border-color);">
         <td style="padding: 0.75rem;">${index + 1}</td>
         <td style="padding: 0.75rem;">${user.name}</td>
-        
         <td style="padding: 0.75rem; font-weight: bold; color: black;">${user.rawMarks.toFixed(2)}</td>
-        
         <td style="padding: 0.75rem; color: var(--success-color); font-weight: 500;">${user.correct}</td>
-        
         <td style="padding: 0.75rem; color: var(--danger-color); font-weight: 500;">${user.incorrect}</td>
-        
         <td style="padding: 0.75rem; color: blue; font-weight: 500;">${user.skipped}</td>
-        
         <td style="padding: 0.75rem;">${user.shift.replace('shift', 'Shift ')}</td>
     </tr>
 `).join('');
