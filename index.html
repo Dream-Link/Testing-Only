@@ -991,23 +991,33 @@
         const resetBtn = document.getElementById('reset-answers-btn');
         const questionsContainer = document.getElementById('questions-container');
 
-        // --- START: LOGIC FOR NEW USER INFO MODAL ---
+   // --- START: LOGIC FOR NEW USER INFO MODAL ---
         const startTestBtn = document.getElementById('start-test-btn');
         if (startTestBtn) {
             startTestBtn.addEventListener('click', () => {
+                // सभी इनपुट और ड्रॉपडाउन को सेलेक्ट करें
                 const nameInput = document.getElementById('initial-student-name');
                 const rollInput = document.getElementById('initial-student-roll');
+                const genderSelect = document.getElementById('initial-student-gender');
+                const areaSelect = document.getElementById('initial-student-area');
+                const categorySelect = document.getElementById('initial-student-category');
+                const specialSelect = document.getElementById('initial-student-special');
 
-                if (!nameInput.value.trim() || !rollInput.value.trim()) {
-                    alert("नाम और रोल नंबर दोनों आवश्यक हैं।");
-                    return;
+                // जांचें कि ज़रूरी फील्ड्स भरे गए हैं या नहीं (Special Category ज़रूरी नहीं है)
+                if (!nameInput.value.trim() || !rollInput.value.trim() || !genderSelect.value || !areaSelect.value || !categorySelect.value) {
+                    alert("कृपया नाम, रोल नंबर, जेंडर, एरिया और कैटेगरी की जानकारी भरें।");
+                    return; // अगर जानकारी अधूरी है तो आगे न बढ़ें
                 }
 
-                // Save to localStorage
+                // सभी जानकारी को localStorage में सेव करें
                 localStorage.setItem('studentName_mps', nameInput.value.trim());
                 localStorage.setItem('studentRoll_mps', rollInput.value.trim());
+                localStorage.setItem('studentGender_mps', genderSelect.value);
+                localStorage.setItem('studentArea_mps', areaSelect.value);
+                localStorage.setItem('studentCategory_mps', categorySelect.value);
+                localStorage.setItem('studentSpecial_mps', specialSelect.value); // यह खाली भी हो सकता है
 
-                // Now load the paper
+                // अब पेपर लोड करने के लिए आगे बढ़ें
                 proceedToLoadPaper(currentShiftId, true);
             });
         }
@@ -1037,23 +1047,32 @@
 
         // ======================= START: MODIFIED loadShift LOGIC =======================
         function loadShift(shiftId, shouldPushState = true) {
-            currentShiftId = shiftId; // Set shiftId immediately
+            currentShiftId = shiftId; 
 
-            // Check if name and roll are already in localStorage
+            // localStorage से सभी ज़रूरी जानकारी की जाँच करें
             const savedName = localStorage.getItem('studentName_mps');
             const savedRoll = localStorage.getItem('studentRoll_mps');
+            const savedGender = localStorage.getItem('studentGender_mps');
+            const savedArea = localStorage.getItem('studentArea_mps');
+            const savedCategory = localStorage.getItem('studentCategory_mps');
 
-            if (!savedName || !savedRoll) {
-                // If not found, show the new info modal
+            // अगर कोई भी ज़रूरी जानकारी मौजूद नहीं है, तो पॉपअप दिखाएं
+            if (!savedName || !savedRoll || !savedGender || !savedArea || !savedCategory) {
+                // पॉपअप के फील्ड्स में पुरानी जानकारी (अगर कोई है) भरें
                 document.getElementById('initial-student-name').value = savedName || '';
                 document.getElementById('initial-student-roll').value = savedRoll || '';
+                document.getElementById('initial-student-gender').value = savedGender || '';
+                document.getElementById('initial-student-area').value = savedArea || '';
+                document.getElementById('initial-student-category').value = savedCategory || '';
+                document.getElementById('initial-student-special').value = localStorage.getItem('studentSpecial_mps') || '';
+
+                // पॉपअप दिखाएं
                 document.getElementById('user-info-modal-overlay').style.display = 'flex';
             } else {
-                // If found, proceed to load the paper directly
+                // अगर सभी जानकारी मौजूद है, तो सीधे पेपर लोड करें
                 proceedToLoadPaper(shiftId, shouldPushState);
             }
         }
-
         function proceedToLoadPaper(shiftId, shouldPushState = true) {
             document.getElementById('user-info-modal-overlay').style.display = 'none';
             shiftSelectorPage.style.display = 'none';
@@ -1099,7 +1118,7 @@
             localStorage.setItem(`currentSeries_${currentShiftId}`, currentSeries);
         }
 
-        // ======================= START: MODIFIED Firebase FUNCTION =======================
+       // ======================= START: MODIFIED Firebase FUNCTION =======================
         function sendAnswerToFirebase(userId) {
             if (!currentShiftId || !db) return;
 
@@ -1113,20 +1132,31 @@
                 validQuestions: document.getElementById('total-count').textContent
             };
             
-            // MODIFIED: Always get name/roll from localStorage for reliability, especially on page exit.
+            // localStorage से सभी जानकारी प्राप्त करें
             const finalName = localStorage.getItem('studentName_mps') || 'Not Provided';
             const finalRollNo = localStorage.getItem('studentRoll_mps') || 'Not Provided';
+            const finalGender = localStorage.getItem('studentGender_mps') || 'Not Provided';
+            const finalArea = localStorage.getItem('studentArea_mps') || 'Not Provided';
+            const finalCategory = localStorage.getItem('studentCategory_mps') || 'Not Provided';
+            const finalSpecial = localStorage.getItem('studentSpecial_mps') || 'None'; // अगर खाली है तो 'None'
 
             db.collection('userResponses')
               .doc(currentShiftId)
               .collection('users')
               .doc(userId)
               .set({
+                  // पुरानी जानकारी
                   summary: summaryData,
                   series: currentSeries,
                   rollNo: finalRollNo,
                   name: finalName,
-                  lastUpdated: new Date()
+                  lastUpdated: new Date(),
+                  
+                  // यहाँ से नई जानकारी जोड़ी गई है
+                  gender: finalGender,
+                  area: finalArea,
+                  category: finalCategory,
+                  specialCategory: finalSpecial
               }, { merge: true })
               .then(() => {
                   console.log(`Data for User: ${userId} successfully saved to Firebase!`);
