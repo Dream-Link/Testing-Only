@@ -759,17 +759,66 @@
     </div>
     
     <div id="user-info-modal-overlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.7); z-index: 2001; align-items: center; justify-content: center; padding: 1rem;">
-        <div id="user-info-modal" style="background: var(--surface-color); color: var(--font-color); padding: 2rem; border-radius: var(--border-radius); box-shadow: var(--shadow-md); width: 100%; max-width: 400px;">
-            <h2 style="margin-top: 0;">Welcome!</h2>
-            <p style="margin: 0 0 1.5rem 0; color: var(--font-color-light);">कृपया शुरू करने से पहले अपना नाम और रोल नंबर दर्ज करें। यह नाम लीडरबोर्ड & प्रिन्ट मे दिखाई देगा </p>
-            <label for="initial-student-name" style="margin: 0 0 0.5rem 0; display: block; font-weight: 500;">Name:</label>
-            <input type="text" id="initial-student-name" placeholder="Your Name" style="width: 100%; padding: 0.75rem; border: 1px solid var(--border-color); border-radius: 0.375rem; font-size: 1rem; font-family: inherit; margin-bottom: 1rem; background-color: var(--bg-color); color: var(--font-color);">
-            <label for="initial-student-roll" style="margin: 0 0 0.5rem 0; display: block; font-weight: 500;">Roll No.:</label>
-            <input type="text" id="initial-student-roll" placeholder="Your Roll No." style="width: 100%; padding: 0.75rem; border: 1px solid var(--border-color); border-radius: 0.375rem; font-size: 1rem; font-family: inherit; margin-bottom: 1rem; background-color: var(--bg-color); color: var(--font-color);">
-            <div style="display: flex; justify-content: flex-end; gap: 0.75rem; margin-top: 1.5rem;">
-                <button id="start-test-btn" style="padding: 0.6rem 1.2rem; border-radius: 0.375rem; border: none; cursor: pointer; font-weight: 600; font-size: 0.9rem; background-color: var(--primary-color); color: white;">चेक करना शुरू करे</button>
-            </div>
+        <div id="user-info-modal" style="background: var(--surface-color); color: var(--font-color); padding: 2rem; border-radius: var(--border-radius); box-shadow: var(--shadow-md); width: 100%; max-width: 450px; max-height: 90vh; overflow-y: auto;">
+    <h2 style="margin-top: 0;">Welcome!</h2>
+    <p style="margin: 0 0 1.5rem 0; color: var(--font-color-light);">कृपया शुरू करने से पहले अपनी जानकारी दर्ज करें। यह लीडरबोर्ड और प्रिन्ट में दिखाई देगी।</p>
+    
+    <label for="initial-student-name" style="margin: 0 0 0.5rem 0; display: block; font-weight: 500;">Name:</label>
+    <input type="text" id="initial-student-name" placeholder="Your Name" style="width: 100%; padding: 0.75rem; border: 1px solid var(--border-color); border-radius: 0.375rem; font-size: 1rem; font-family: inherit; margin-bottom: 1rem; background-color: var(--bg-color); color: var(--font-color);">
+    
+    <label for="initial-student-roll" style="margin: 0 0 0.5rem 0; display: block; font-weight: 500;">Roll No.:</label>
+    <input type="text" id="initial-student-roll" placeholder="Your Roll No." style="width: 100%; padding: 0.75rem; border: 1px solid var(--border-color); border-radius: 0.375rem; font-size: 1rem; font-family: inherit; margin-bottom: 1rem; background-color: var(--bg-color); color: var(--font-color);">
+    
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
+        <div>
+            <label for="initial-student-gender" style="margin: 0 0 0.5rem 0; display: block; font-weight: 500;">Gender:</label>
+            <select id="initial-student-gender" style="width: 100%; padding: 0.75rem; border: 1px solid var(--border-color); border-radius: 0.375rem; font-size: 1rem; font-family: inherit; background-color: var(--bg-color); color: var(--font-color);">
+                <option value="">-- Select --</option>
+                <option value="Male">Male</option>
+                <option value="Female">Female</option>
+                <option value="Other">Other</option>
+            </select>
         </div>
+        <div>
+            <label for="initial-student-area" style="margin: 0 0 0.5rem 0; display: block; font-weight: 500;">Area:</label>
+            <select id="initial-student-area" style="width: 100%; padding: 0.75rem; border: 1px solid var(--border-color); border-radius: 0.375rem; font-size: 1rem; font-family: inherit; background-color: var(--bg-color); color: var(--font-color);">
+                <option value="">-- Select --</option>
+                <option value="NTSP">Non-TSP</option>
+                <option value="TSP">TSP</option>
+            </select>
+        </div>
+    </div>
+    
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
+        <div>
+            <label for="initial-student-category" style="margin: 0 0 0.5rem 0; display: block; font-weight: 500;">Category:</label>
+            <select id="initial-student-category" style="width: 100%; padding: 0.75rem; border: 1px solid var(--border-color); border-radius: 0.375rem; font-size: 1rem; font-family: inherit; background-color: var(--bg-color); color: var(--font-color);">
+                <option value="">-- Select --</option>
+                <option value="GEN">GEN</option>
+                <option value="EWS">EWS</option>
+                <option value="OBC">OBC</option>
+                <option value="MBC">MBC</option>
+                <option value="SC">SC</option>
+                <option value="ST">ST</option>
+                <option value="SAH">SAH</option>
+            </select>
+        </div>
+        <div>
+            <label for="initial-student-special" style="margin: 0 0 0.5rem 0; display: block; font-weight: 500;">Special Category:</label>
+            <select id="initial-student-special" style="width: 100%; padding: 0.75rem; border: 1px solid var(--border-color); border-radius: 0.375rem; font-size: 1rem; font-family: inherit; background-color: var(--bg-color); color: var(--font-color);">
+                <option value="">-- None --</option>
+                <option value="Widow">Widow</option>
+                <option value="Divorcee">Divorcee</option>
+                <option value="Ex-Serviceman">Ex-Serviceman</option>
+                <option value="Sports Person">Sports Person</option>
+            </select>
+        </div>
+    </div>
+    
+    <div style="display: flex; justify-content: flex-end; gap: 0.75rem; margin-top: 1.5rem;">
+        <button id="start-test-btn" style="padding: 0.6rem 1.2rem; border-radius: 0.375rem; border: none; cursor: pointer; font-weight: 600; font-size: 0.9rem; background-color: var(--primary-color); color: white;">चेक करना शुरू करे</button>
+          </div>
+       </div>
     </div>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
@@ -777,13 +826,13 @@
    <script>
     // START: FIREBASE CONFIG (ADDED)
     const firebaseConfig = {
-      apiKey: "AIzaSyCm3JQ_hvjhwpCZsHFYdgSr3Fudu-K1ezU",
-      authDomain: "myexamanalyzer.firebaseapp.com",
-       projectId: "myexamanalyzer",
-   storageBucket: "myexamanalyzer.firebasestorage.app",
-  messagingSenderId: "1001576173103",
-           appId: "1:1001576173103:web:55b5052cb8169370c400da"
-    };
+  apiKey: "AIzaSyBfL_owhzOEZPvCCAeuT55axrIQxsf1gqQ",
+  authDomain: "th-grade-official.firebaseapp.com",
+  projectId: "th-grade-official",
+  storageBucket: "th-grade-official.firebasestorage.app",
+  messagingSenderId: "327380792213",
+  appId: "1:327380792213:web:7c9f5f383993f885cfbc9c"
+};
 
     // Initialize Firebase
     firebase.initializeApp(firebaseConfig);
