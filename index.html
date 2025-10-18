@@ -655,10 +655,10 @@
                 <a class="shift-btn" data-shift="shift6"><div class="icon"><i class="fas fa-file-alt"></i></div><div class="text">6th Shift 21.09.2025</div></a>
             </div>
             <div class="selector-footer">
-                <p>Last Update: 03.10.2025 22:02</p>
-                <p style="text-align:center; color: red;"> सभी प्रश्नों के उत्तर संभावित उत्तर कुंजी के आधार पर हैं, Official Answer Key जारी होने पर UPDATE कर दी जाएगी।</p>
+                <p>Last Update: 18.10.2025 07:00</p>
+                <p style="text-align:center; color: red;"> सभी प्रश्नों के उत्तर बोर्ड द्वारा जारी प्राथमिक उत्तर कुंजी के आधार पर हैं, अपने वास्तविक पेपर से मिलान कर पुष्टि भी जरूर करे </p>
                 <p>
-                    <a href="https://t.me/Dreamlinkmp" target="_blank" class="creator-link" style="color: blue; text-decoration: underline;">MP Salodiya</a>
+                    <a href="https://t.me/Dreamlinkmp" target="_blank" class="creator-link" style="color: blue; text-decoration: underline;">Join Telegram @ MP Salodiya</a>
                 </p>
             </div>
             <div id="leaderboard-section" style="margin-top: 3rem; width: 100%; text-align: left;">
@@ -728,7 +728,7 @@
                 <div id="right-que-item" class="summary-item"><div id="right-que-value" class="count">0.00</div><div class="label">Final R.Q.</div></div>
                 <div id="raw-marks-item" class="summary-item"><div id="raw-marks-value" class="count">0.00</div><div class="label">RAW Marks</div></div>
                 <div id="unattempted-warning-item" class="summary-item">
-                    <span>अभी तक <strong id="unattempted-count">0</strong> प्रश्नों में कोई भी ऑप्शन टिक नहीं है।</span>
+                    <span>अभी तक <strong id="unattempted-count">0</strong>वैध प्रश्नों में कोई भी ऑप्शन टिक नहीं है।</span>
                 </div>
                 </div>
         </div>
@@ -765,7 +765,7 @@
     <div id="user-info-modal-overlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.7); z-index: 2001; align-items: center; justify-content: center; padding: 1rem;">
         <div id="user-info-modal" style="background: var(--surface-color); color: var(--font-color); padding: 2rem; border-radius: var(--border-radius); box-shadow: var(--shadow-md); width: 100%; max-width: 450px; max-height: 90vh; overflow-y: auto;">
     <h2 style="margin-top: 0;">Welcome!</h2>
-    <p style="margin: 0 0 1.5rem 0; color: var(--font-color-light);">कृपया शुरू करने से पहले अपनी जानकारी दर्ज करें। यह लीडरबोर्ड और प्रिन्ट में दिखाई देगी।</p>
+    <p style="margin: 0 0 1.5rem 0; color: var(--font-color-light);">Roll No. के अलावा सभी जानकारी लीडरबोर्ड मे दिखाई देगी </p>
     
     <label for="initial-student-name" style="margin: 0 0 0.5rem 0; display: block; font-weight: 500;">Name:</label>
     <input type="text" id="initial-student-name" placeholder="Your Name" style="width: 100%; padding: 0.75rem; border: 1px solid var(--border-color); border-radius: 0.375rem; font-size: 1rem; font-family: inherit; margin-bottom: 1rem; background-color: var(--bg-color); color: var(--font-color);">
@@ -989,7 +989,7 @@
         // --- लीडरबोर्ड कोड का अंत ---
 
         if (typeof allShiftData === 'undefined') {
-            document.body.innerHTML = '<h1 style="text-align:center; padding: 2rem; color: red;">Please Wait... Official उत्तर कुंजी अपडेट की जा रही है।</h1>';
+            document.body.innerHTML = '<h1 style="text-align:center; padding: 2rem; color: red;">Please Wait... अंतिम उत्तर कुंजी अपडेट की जा रही है।</h1>';
             return;
         }
 
@@ -1621,7 +1621,7 @@
         function generateAndPrintOfficialKey() {
             const container = document.getElementById('official-key-print-container');
             let html = `<div class="official-key-header">
-                    <h1>चतुर्थ श्रेणी कर्मचारी संभावित उत्तर कुंजी</h1>
+                    <h1>चतुर्थ श्रेणी कर्मचारी प्राथमिक उत्तर कुंजी</h1>
                     <p>${currentShiftData.title} | पेपर कोड: ${currentSeries}</p>
                 </div><div class="official-key-grid">`;
 
@@ -1647,7 +1647,7 @@
             }
 
             html += `</div>`;
-            html += `<div class="official-key-footer"><p>नोट - यह अभी संभावित उत्तर कुंजी है, बोर्ड द्वारा Official उत्तर कुंजी जारी होने पर UPDATE कर दी जाएगी </p></div>`;
+            html += `<div class="official-key-footer"><p>नोट - यह उत्तर कुंजी बोर्ड द्वारा जारी प्राथमिक उत्तर कुंजी के आधार पर Auto Generated है</p></div>`;
 
             container.innerHTML = html;
             openPrintWindow(container.innerHTML);
