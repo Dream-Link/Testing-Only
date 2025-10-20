@@ -78,25 +78,35 @@
         .selector-container h2 { font-size: 2.25rem; font-weight: 700; margin: 0 0 0.5rem; }
         .selector-container .subtitle { font-size: 1.1rem; color: var(--font-color-light); margin-bottom: 3rem; }
         .shift-selector { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.5rem; }
-    .shift-btn {
-    display: flex; align-items: center; gap: 1rem; padding: 0.8rem 1.25rem;
-    background-color: var(--surface-color); border: 1px solid var(--border-color);
-    border-radius: 50px;
-    text-decoration: none; cursor: pointer;
-    text-align: left; box-shadow: var(--shadow-sm);
-    transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s;
-    position: relative; /* <-- यह लाइन जोड़ें */
-    overflow: hidden;   /* <-- और यह लाइन जोड़ें */
-}
-        }
-        .shift-btn:hover { transform: translateY(-5px); box-shadow: var(--shadow-md); }
-        .shift-btn .icon {
-            font-size: 1.5rem; color: var(--primary-color); width: 45px; height: 45px;
-            display: grid; place-items: center; background-color: var(--primary-light);
-            border-radius: 50%; flex-shrink: 0;
-            transition: color 0.2s, background-color 0.2s;
-        }
-        .shift-btn .text { font-size: 1.1rem; font-weight: 600; color: var(--font-color); transition: color 0.2s; }
+   .shift-btn {
+        display: flex; align-items: center; gap: 1rem; padding: 0.8rem 1.25rem;
+        background-color: #4a3a00; /* गहरा गोल्ड बेस */
+        border: 1px solid #FFD700; /* गोल्ड बॉर्डर */
+        border-radius: 50px;
+        text-decoration: none; cursor: pointer;
+        text-align: left; box-shadow: var(--shadow-sm);
+        transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s;
+        position: relative; 
+        overflow: hidden;   
+    }
+    .shift-btn:hover { 
+        transform: translateY(-5px); 
+        box-shadow: 0 6px 12px rgba(255, 215, 0, 0.3); /* गोल्ड ग्लो होवर */
+        background-color: #6a5a20;
+    }
+    .shift-btn .icon {
+        font-size: 1.5rem; color: #4a3a00; /* गहरा गोल्ड */
+        width: 45px; height: 45px;
+        display: grid; place-items: center; background-color: #FFD700; /* गोल्ड */
+        border-radius: 50%; flex-shrink: 0;
+        transition: color 0.2s, background-color 0.2s;
+    }
+    .shift-btn .text { 
+        font-size: 1.1rem; 
+        font-weight: 600; 
+        color: #FFFFFF; /* सफेद टेक्स्ट */
+        transition: color 0.2s; 
+    }
         .selector-footer { margin-top: 3rem; font-size: 0.875rem; color: var(--secondary-color); line-height: 1.5; }
         .selector-footer p { margin: 0.5rem 0; }
         
@@ -559,20 +569,24 @@
     }
 }
 /* ======================== END: LEADERBOARD MOBILE STYLES ========================= */
-        /* ======================== START: SHIFT BUTTON BORDER ANIMATION ========================= */
+       /* ======================== START: DIWALI FIRECRACKER BORDER ANIMATION ========================= */
 .shift-btn::before {
     content: '';
     position: absolute;
     top: 50%;
     left: 50%;
-    width: 150%; /* बॉक्स से बड़ा ताकि घूम सके */
-    height: 300%; /* बॉक्स से बड़ा ताकि घूम सके */
-    z-index: -1; /* बटन के टेक्स्ट के पीछे रखने के लिए */
+    width: 150%; 
+    height: 300%; 
+    z-index: -1; 
     background: conic-gradient(
-        var(--primary-color) 20deg, 
-        transparent 120deg
+        #FFD700 10deg,  /* Gold */
+        #FFA500 40deg,  /* Orange */
+        #FF4500 80deg,  /* Red-Orange */
+        transparent 150deg
     );
-    animation: rotate-border 4s linear infinite;
+    /* एनीमेशन को तेज और चमकदार बनाया गया है */
+    animation: rotate-border 2.5s linear infinite;
+    filter: blur(3px); /* चमक (Glow) इफ़ेक्ट */
 }
 
 @keyframes rotate-border {
@@ -583,11 +597,97 @@
         transform: translate(-50%, -50%) rotate(360deg);
     }
 }
-/* ======================== END: SHIFT BUTTON BORDER ANIMATION ========================= */
+/* ======================== END: DIWALI FIRECRACKER BORDER ANIMATION ========================= */
+        /* ======================== START: DIWALI SPLASH CSS ========================= */
+#diwali-splash-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.8); /* डार्क बैकग्राउंड */
+    z-index: 9999;
+    display: none; /* इसे JS से दिखाएँगे */
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+}
+
+#diwali-splash-content {
+    position: relative;
+    background: #ffffff;
+    padding: 2rem;
+    border-radius: 10px;
+    box-shadow: 0 5px 20px rgba(255, 215, 0, 0.3); /* गोल्ड शैडो */
+    border: 2px solid #FFD700; /* गोल्ड बॉर्डर */
+    max-width: 500px;
+    width: 100%;
+    text-align: center;
+}
+
+#diwali-splash-content img {
+    max-width: 100%;
+    height: auto;
+    max-height: 70vh;
+}
+
+#close-splash-btn {
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    font-size: 2.5rem;
+    font-weight: bold;
+    color: #555;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    line-height: 1;
+}
+/* ======================== END: DIWALI SPLASH CSS ========================= */
+        /* ======================== START: DIWALI HOME PAGE THEME ========================= */
+#shift-selector-page {
+    /* आपकी डाउनलोड की हुई diwali-background.jpg इमेज */
+    background-image: url('diwali-background.jpg'); 
+    background-size: cover;
+    background-position: center center;
+    background-repeat: no-repeat;
+    /* टेक्स्ट पढ़ने के लिए एक डार्क ओवरले */
+    background-blend-mode: multiply;
+    background-color: rgba(20, 10, 0, 0.6); 
+}
+
+/* टेक्स्ट कलर को गोल्ड (सुनहरा) करना */
+#shift-selector-page .selector-container h2 {
+    color: #FFD700; /* Gold */
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
+}
+
+/* सबटाइटल और फुटर टेक्स्ट को सफेद करना */
+#shift-selector-page .selector-container .subtitle,
+#shift-selector-page .selector-footer p {
+    color: #f1f1f1;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.7);
+}
+
+/* टेलीग्राम लिंक को फेस्टिव ऑरेंज कलर देना */
+#shift-selector-page .selector-footer .creator-link {
+    color: #FFA500; /* Orange */
+    font-weight: bold;
+}
+/* ======================== END: DIWALI HOME PAGE THEME ========================= */
     </style>
     
 </head>
 <body>
+    <div id="diwali-splash-overlay">
+    <div id="diwali-splash-content">
+        <button id="close-splash-btn">&times;</button>
+        <img src="happy-diwali.png" alt="Happy Diwali">
+        <p style="text-align: center; font-size: 1.2rem; font-weight: bold; color: #d9534f; margin-top: 1rem;">
+            Happy Diwali!
+        </p>
+    </div>
+</div>
 
     <div class="theme-selector">
         <button id="theme-toggle-btn" title="Change Theme">
@@ -846,7 +946,24 @@
     let currentShiftId = null, allQuestions = [], userAnswers = {}, currentSeries = '', activeFilter = 'all', currentShiftData = {};
 
     document.addEventListener('DOMContentLoaded', () => {
+// ======================= START: DIWALI SPLASH LOGIC =======================
+        try {
+            const diwaliOverlay = document.getElementById('diwali-splash-overlay');
+            const closeSplashBtn = document.getElementById('close-splash-btn');
 
+            // चेक करें कि क्या इस सेशन में पॉपअप दिखाया जा चुका है
+            if (!sessionStorage.getItem('diwaliSplashShown')) {
+                diwaliOverlay.style.display = 'flex'; // पॉपअप दिखाएँ
+
+                closeSplashBtn.addEventListener('click', () => {
+                    diwaliOverlay.style.display = 'none'; // पॉपअप छिपाएँ
+                    sessionStorage.setItem('diwaliSplashShown', 'true'); // सेशन के लिए मार्क करें
+                });
+            }
+        } catch (e) {
+            console.error("Diwali Splash Error:", e);
+        }
+        // ======================== END: DIWALI SPLASH LOGIC ========================
         // ======================= START: THEME SELECTOR JAVASCRIPT =======================
         const themeToggleBtn = document.getElementById('theme-toggle-btn');
         const themeDropdown = document.getElementById('theme-dropdown');
