@@ -665,6 +665,48 @@
                 
                 <h4 style="font-size: 1.2rem; font-weight: 700; color: var(--primary-dark); margin-top: 0; margin-bottom: 1.5rem; padding-bottom: 0.75rem; border-bottom: 1px solid var(--border-color);">लीडरबोर्ड</h4>
 
+                <div id="user-rank-highlight" style="display: none; background-color: var(--primary-light); border: 1px solid var(--primary-color); border-radius: var(--border-radius); padding: 1rem 1.5rem; margin-bottom: 1.5rem; box-shadow: var(--shadow-sm);">
+                <h4 style="margin-top: 0; margin-bottom: 1rem; color: var(--primary-dark); border-bottom: 1px solid var(--primary-color); padding-bottom: 0.5rem;">आपकी रैंक (रोल नंबर के आधार पर)</h4>
+                
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem 1rem; font-size: 0.9rem;">
+                    <div><strong>नाम:</strong> <span id="user-rank-name">N/A</span></div>
+                    <div><strong>रॉ मार्क्स:</strong> <strong id="user-rank-marks" style="color: #000;">0.00</strong></div>
+                    
+                    <div><strong>ओवरऑल रैंक:</strong> <span id="user-rank-overall">N/A</span></div>
+                    <div><strong>ओवरऑल कैटेगरी रैंक:</strong> <span id="user-rank-overall-cat">N/A</span></div>
+                    
+                    <div><strong>शिफ़्ट रैंक:</strong> <span id="user-rank-shift">N/A</span></div>
+                    <div><strong>शिफ़्ट कैटेगरी रैंक:</strong> <span id="user-rank-shift-cat">N/A</span></div>
+                </div>
+                <p id="user-rank-note" style="font-size: 0.75rem; color: var(--font-color-light); margin: 1rem 0 0 0; text-align: center;">* यह आपकी उच्चतम स्कोर वाली शिफ़्ट के आधार पर है। यह रैंक केवल 'सभी शिफ़्ट' फ़िल्टर में दिखाई देगी।</p>
+            </div>
+            ```
+
+---
+
+### चरण 2: CSS कोड जोड़ना (वैकल्पिक, केवल मोबाइल के लिए)
+
+हमने ज़्यादातर स्टाइल HTML में ही `style="..."` का इस्तेमाल करके कर दी है, लेकिन मोबाइल स्क्रीन पर इसे बेहतर दिखाने के लिए आप यह CSS कोड अपने `<style>` टैग में जोड़ सकते हैं।
+
+**कहाँ जोड़ें:**
+`@media (max-width: 768px)` वाले ब्लॉक के अंदर, `/* ======================== END: LEADERBOARD MOBILE STYLES ========================= */` से ठीक पहले।
+
+```css
+    /* --- यह कोड user rank box को मोबाइल पर बेहतर बनाता है --- */
+    #user-rank-highlight {
+        padding: 1rem;
+    }
+    #user-rank-highlight h4 {
+        font-size: 1rem;
+    }
+    #user-rank-highlight div[style*="grid-template-columns"] {
+        grid-template-columns: 1fr; /* मोबाइल पर एक कॉलम में दिखाएं */
+        gap: 0.5rem;
+        font-size: 0.85rem;
+    }
+    #user-rank-note {
+        font-size: 0.7rem;
+    }
                 <div class="leaderboard-controls" style="margin-bottom: 1.5rem; display: flex; gap: 1rem; align-items: center; flex-wrap: wrap;">
                     <label for="leaderboard-shift-filter">शिफ़्ट के अनुसार फ़िल्टर करें:</label>
                     <select id="leaderboard-shift-filter" style="padding: 0.5rem; border-radius: 0.375rem; border: 1px solid var(--border-color);">
@@ -921,13 +963,16 @@
                             const validQuestions = parseInt(userData.summary.validQuestions) || 0;
 
                             if (validQuestions > 0 && (correct + incorrect + skipped) === validQuestions) {
-                                allUsers.push({
+                               allUsers.push({
                                     // ===== बदलाव 1: यहाँ नई जानकारी जोड़ी गई है =====
                                     name: userData.name || 'N/A',
                                     gender: userData.gender || 'N/A',
                                     area: userData.area || 'N/A',
                                     category: userData.category || 'N/A',
                                     specialCategory: userData.specialCategory || '-',
+                                    
+                                    rollNo: userData.rollNo || 'N/A', // <-- यह नई लाइन जोड़ें
+
                                     // ===============================================
                                     rawMarks: parseFloat(userData.summary.rawMarks) || 0,
                                     correct: correct,
@@ -942,7 +987,58 @@
                 
                 const filteredUsers = allUsers.filter(user => user.rawMarks <= 180);
                 filteredUsers.sort((a, b) => b.rawMarks - a.rawMarks);
+// ======================= START: USER RANK CALCULATION (NEW) =======================
+                
+                const userRankBox = document.getElementById('user-rank-highlight');
+                userRankBox.style.display = 'none'; // पहले इसे छिपा दें
 
+                // यह लॉजिक केवल तभी चलाएं जब 'सभी शिफ़्ट' फ़िल्टर चुना गया हो
+                if (shiftFilter === 'all') {
+                    const currentUserRoll = localStorage.getItem('studentRoll_mps');
+
+                    if (currentUserRoll) {
+                        // 1. यूज़र को ढूँढें (सूची पहले से ही मार्क्स के आधार पर सॉर्ट है)
+                        const userIndex = filteredUsers.findIndex(user => user.rollNo === currentUserRoll);
+
+                        if (userIndex !== -1) {
+                            // 2. यूज़र का डेटा प्राप्त करें (यह उसका उच्चतम स्कोर वाला डेटा है)
+                            const userData = filteredUsers[userIndex];
+                            const userShift = userData.shift;
+                            const userCategory = userData.category;
+
+                            // 3. रैंक की गणना करें
+                            // (A) ओवरऑल रैंक
+                            const overallRank = userIndex + 1;
+
+                            // (B) ओवरऑल कैटेगरी रैंक
+                            const categoryUsers = filteredUsers.filter(user => user.category === userCategory);
+                            const categoryIndex = categoryUsers.findIndex(user => user.rollNo === currentUserRoll);
+                            const overallCategoryRank = categoryIndex + 1;
+
+                            // (C) शिफ़्ट रैंक
+                            const shiftUsers = filteredUsers.filter(user => user.shift === userShift);
+                            const shiftIndex = shiftUsers.findIndex(user => user.rollNo === currentUserRoll);
+                            const shiftRank = shiftIndex + 1;
+
+                            // (D) शिफ़्ट कैटेगरी रैंक
+                            const shiftCategoryUsers = shiftUsers.filter(user => user.category === userCategory);
+                            const shiftCategoryIndex = shiftCategoryUsers.findIndex(user => user.rollNo === currentUserRoll);
+                            const shiftCategoryRank = shiftCategoryIndex + 1;
+
+                            // 4. बॉक्स में डेटा भरें
+                            document.getElementById('user-rank-name').textContent = userData.name;
+                            document.getElementById('user-rank-marks').textContent = userData.rawMarks.toFixed(2);
+                            document.getElementById('user-rank-overall').textContent = `${overallRank} / ${filteredUsers.length}`;
+                            document.getElementById('user-rank-overall-cat').textContent = `${overallCategoryRank} (${userCategory} में)`;
+                            document.getElementById('user-rank-shift').textContent = `${shiftRank} (${userShift.replace('shift', 'S')} में)`;
+                            document.getElementById('user-rank-shift-cat').textContent = `${shiftCategoryRank} (${userCategory} / ${userShift.replace('shift', 'S')})`;
+
+                            // 5. बॉक्स को दिखाएं
+                            userRankBox.style.display = 'block';
+                        }
+                    }
+                }
+                // ======================== END: USER RANK CALCULATION (NEW) ========================
                 // ===== बदलाव 2: यहाँ टेबल बनाने वाले HTML में नए कॉलम (<td>) जोड़े गए हैं =====
                 leaderboardBody.innerHTML = filteredUsers.map((user, index) => `
     <tr style="border-bottom: 1px solid var(--border-color);">
