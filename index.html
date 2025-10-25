@@ -523,7 +523,7 @@
             display: block; /* Show with JS */
         }
         /* ======================== END: NEW WARNING BOX CSS (ADDED) ========================= */
-        /* ======================== START: LEADERBOARD MOBILE STYLES ========================= */
+       /* ======================== START: LEADERBOARD MOBILE STYLES ========================= */
 @media (max-width: 768px) {
     /* Step 1: स्क्रीन को फुल-विड्थ बनाने के लिए बाहरी पैडिंग कम करें */
     #shift-selector-page, .selector-container {
@@ -535,6 +535,23 @@
         margin-top: 2rem;
     }
     
+    /* --- यह कोड user rank box को मोबाइल पर बेहतर बनाता है (NEW) --- */
+    #user-rank-highlight {
+        padding: 1rem;
+    }
+    #user-rank-highlight h4 {
+        font-size: 1rem;
+    }
+    #user-rank-highlight div[style*="grid-template-columns"] {
+        grid-template-columns: 1fr; /* मोबाइल पर एक कॉलम में दिखाएं */
+        gap: 0.5rem;
+        font-size: 0.85rem;
+    }
+    #user-rank-note {
+        font-size: 0.7rem;
+    }
+    /* --- User rank box CSS end --- */
+
     /* Step 2: टेबल के टेक्स्ट को छोटा और कॉम्पैक्ट करें */
     #leaderboard-table th,
     #leaderboard-table td {
@@ -661,52 +678,25 @@
                     <a href="https://t.me/Dreamlinkmp" target="_blank" class="creator-link" style="color: blue; text-decoration: underline;">Join Telegram @ MP Salodiya</a>
                 </p>
             </div>
-            <div id="leaderboard-section" style="margin-top: 3rem; width: 100%; text-align: left;">
+          <div id="leaderboard-section" style="margin-top: 3rem; width: 100%; text-align: left;">
                 
                 <h4 style="font-size: 1.2rem; font-weight: 700; color: var(--primary-dark); margin-top: 0; margin-bottom: 1.5rem; padding-bottom: 0.75rem; border-bottom: 1px solid var(--border-color);">लीडरबोर्ड</h4>
 
                 <div id="user-rank-highlight" style="display: none; background-color: var(--primary-light); border: 1px solid var(--primary-color); border-radius: var(--border-radius); padding: 1rem 1.5rem; margin-bottom: 1.5rem; box-shadow: var(--shadow-sm);">
-                <h4 style="margin-top: 0; margin-bottom: 1rem; color: var(--primary-dark); border-bottom: 1px solid var(--primary-color); padding-bottom: 0.5rem;">आपकी रैंक (रोल नंबर के आधार पर)</h4>
-                
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem 1rem; font-size: 0.9rem;">
-                    <div><strong>नाम:</strong> <span id="user-rank-name">N/A</span></div>
-                    <div><strong>रॉ मार्क्स:</strong> <strong id="user-rank-marks" style="color: #000;">0.00</strong></div>
+                    <h4 style="margin-top: 0; margin-bottom: 1rem; color: var(--primary-dark); border-bottom: 1px solid var(--primary-color); padding-bottom: 0.5rem;">आपकी रैंक (रोल नंबर के आधार पर)</h4>
                     
-                    <div><strong>ओवरऑल रैंक:</strong> <span id="user-rank-overall">N/A</span></div>
-                    <div><strong>ओवरऑल कैटेगरी रैंक:</strong> <span id="user-rank-overall-cat">N/A</span></div>
-                    
-                    <div><strong>शिफ़्ट रैंक:</strong> <span id="user-rank-shift">N/A</span></div>
-                    <div><strong>शिफ़्ट कैटेगरी रैंक:</strong> <span id="user-rank-shift-cat">N/A</span></div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem 1rem; font-size: 0.9rem;">
+                        <div><strong>नाम:</strong> <span id="user-rank-name">N/A</span></div>
+                        <div><strong>रॉ मार्क्स:</strong> <strong id="user-rank-marks" style="color: #000;">0.00</strong></div>
+                        
+                        <div><strong>ओवरऑल रैंक:</strong> <span id="user-rank-overall">N/A</span></div>
+                        <div><strong>ओवरऑल कैटेगरी रैंक:</strong> <span id="user-rank-overall-cat">N/A</span></div>
+                        
+                        <div><strong>शिफ़्ट रैंक:</strong> <span id="user-rank-shift">N/A</span></div>
+                        <div><strong>शिफ़्ट कैटेगरी रैंक:</strong> <span id="user-rank-shift-cat">N/A</span></div>
+                    </div>
+                    <p id="user-rank-note" style="font-size: 0.75rem; color: var(--font-color-light); margin: 1rem 0 0 0; text-align: center;">* यह आपकी उच्चतम स्कोर वाली शिफ़्ट के आधार पर है। यह रैंक केवल 'सभी शिफ़्ट' फ़िल्टर में दिखाई देगी।</p>
                 </div>
-                <p id="user-rank-note" style="font-size: 0.75rem; color: var(--font-color-light); margin: 1rem 0 0 0; text-align: center;">* यह आपकी उच्चतम स्कोर वाली शिफ़्ट के आधार पर है। यह रैंक केवल 'सभी शिफ़्ट' फ़िल्टर में दिखाई देगी।</p>
-            </div>
-            ```
-
----
-
-### चरण 2: CSS कोड जोड़ना (वैकल्पिक, केवल मोबाइल के लिए)
-
-हमने ज़्यादातर स्टाइल HTML में ही `style="..."` का इस्तेमाल करके कर दी है, लेकिन मोबाइल स्क्रीन पर इसे बेहतर दिखाने के लिए आप यह CSS कोड अपने `<style>` टैग में जोड़ सकते हैं।
-
-**कहाँ जोड़ें:**
-`@media (max-width: 768px)` वाले ब्लॉक के अंदर, `/* ======================== END: LEADERBOARD MOBILE STYLES ========================= */` से ठीक पहले।
-
-```css
-    /* --- यह कोड user rank box को मोबाइल पर बेहतर बनाता है --- */
-    #user-rank-highlight {
-        padding: 1rem;
-    }
-    #user-rank-highlight h4 {
-        font-size: 1rem;
-    }
-    #user-rank-highlight div[style*="grid-template-columns"] {
-        grid-template-columns: 1fr; /* मोबाइल पर एक कॉलम में दिखाएं */
-        gap: 0.5rem;
-        font-size: 0.85rem;
-    }
-    #user-rank-note {
-        font-size: 0.7rem;
-    }
                 <div class="leaderboard-controls" style="margin-bottom: 1.5rem; display: flex; gap: 1rem; align-items: center; flex-wrap: wrap;">
                     <label for="leaderboard-shift-filter">शिफ़्ट के अनुसार फ़िल्टर करें:</label>
                     <select id="leaderboard-shift-filter" style="padding: 0.5rem; border-radius: 0.375rem; border: 1px solid var(--border-color);">
@@ -723,27 +713,27 @@
 
                 <div id="leaderboard-table-container" style="overflow-x: auto; display: none; background-color: var(--surface-color); border: 1px solid var(--border-color); border-radius: var(--border-radius); box-shadow: var(--shadow-sm);">
                     <table id="leaderboard-table" style="width: 100%; border-collapse: collapse; text-align: left;">
-    <thead>
-        <tr>
-            <th style="padding: 0.75rem; border-bottom: 2px solid var(--border-color);">रैंक</th>
-            <th style="padding: 0.75rem; border-bottom: 2px solid var(--border-color);">नाम</th>
-            <th style="padding: 0.75rem; border-bottom: 2px solid var(--border-color);">जेंडर</th>
-            <th style="padding: 0.75rem; border-bottom: 2px solid var(--border-color);">एरिया</th>
-            <th style="padding: 0.75rem; border-bottom: 2px solid var(--border-color);">कैटेगरी</th>
-            <th style="padding: 0.75rem; border-bottom: 2px solid var(--border-color);">विशेष</th>
-            <th style="padding: 0.75rem; border-bottom: 2px solid var(--border-color);">रॉ मार्क्स</th>
-            <th style="padding: 0.75rem; border-bottom: 2px solid var(--border-color);">सही</th>
-            <th style="padding: 0.75rem; border-bottom: 2px solid var(--border-color);">गलत</th>
-            <th style="padding: 0.75rem; border-bottom: 2px solid var(--border-color);">छोड़े गए</th>
-            <th style="padding: 0.75rem; border-bottom: 2px solid var(--border-color);">शिफ़्ट</th>
-        </tr>
-    </thead>
-    <tbody id="leaderboard-body">
-    </tbody>
-</table>
+                        <thead>
+                            <tr>
+                                <th style="padding: 0.75rem; border-bottom: 2px solid var(--border-color);">रैंक</th>
+                                <th style="padding: 0.75rem; border-bottom: 2px solid var(--border-color);">नाम</th>
+                                <th style="padding: 0.75rem; border-bottom: 2px solid var(--border-color);">जेंडर</th>
+                                <th style="padding: 0.75rem; border-bottom: 2px solid var(--border-color);">एरिया</th>
+                                <th style="padding: 0.75rem; border-bottom: 2px solid var(--border-color);">कैटेगरी</th>
+                                <th style="padding: 0.75rem; border-bottom: 2px solid var(--border-color);">विशेष</th>
+                                <th style="padding: 0.75rem; border-bottom: 2px solid var(--border-color);">रॉ मार्क्स</th>
+                                <th style="padding: 0.75rem; border-bottom: 2px solid var(--border-color);">सही</th>
+                                <th style="padding: 0.75rem; border-bottom: 2px solid var(--border-color);">गलत</th>
+                                <th style="padding: 0.75rem; border-bottom: 2px solid var(--border-color);">छोड़े गए</th>
+                                <th style="padding: 0.75rem; border-bottom: 2px solid var(--border-color);">शिफ़्ट</th>
+                            </tr>
+                        </thead>
+                        <tbody id="leaderboard-body">
+                        </tbody>
+                    </table>
                     <p id="leaderboard-loading" style="text-align: center; padding: 1rem; display: none;">Loading...</p>
                 </div>
-            </div> 
+            </div>
          </div>
     </div>
 
