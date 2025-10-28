@@ -660,7 +660,7 @@
     /* "All Series" - Show info bar (default behavior, no rule needed) */
 
     /* "Only Option" - Hide info bar, question text, and image */
-  /* ================= START: ONLY OPTION MODE (OMR LAYOUT) ================= */
+/* ================= START: ONLY OPTION MODE (OMR LAYOUT) ================= */
 
     /* "Only Option" - OMR की तरह हॉरिजॉन्टल लेआउट */
     #question-paper-page[data-view-mode="only-option"] .question-info-bar {
@@ -700,14 +700,14 @@
         flex-grow: 1; /* बची हुई जगह ले लें */
     }
 
-    /* ऑप्शन की लिस्ट (ul) को हॉरिजॉन्टल बनाएं */
+    /* ऑप्शन की लिस्ट (ul) को एक सीधी हॉरिजॉन्टल लाइन बनाएं */
     #question-paper-page[data-view-mode="only-option"] .options-list {
         flex-direction: row;
         justify-content: flex-start;
         gap: 0.5rem;
-        flex-wrap: wrap; /* छोटी स्क्रीन पर रैप करने दें */
-        overflow-x: visible;
-        padding: 0;
+        flex-wrap: nowrap;  /* यह गोलों को अगली लाइन में जाने से रोकेगा */
+        overflow-x: auto;   /* ज़रूरत पड़ने पर हॉरिजॉन्टल स्क्रॉल देगा */
+        padding: 0.2rem 0;  /* हल्का सा ऊपर-नीचे पैडिंग */
     }
 
     /* ऑप्शन के गोलों (li) को स्टाइल करें */
@@ -715,7 +715,7 @@
         padding: 0;
         width: 40px; 
         height: 40px; 
-        flex-shrink: 0; 
+        flex-shrink: 0; /* यह गोलों को सिकुड़ने से रोकेगा */
         display: grid;
         place-items: center;
         border-radius: 50%;
@@ -1531,7 +1531,7 @@
                 qContent.className = 'question-content';
 
                 const qT = document.createElement('h3');
-               qT.innerHTML = `<span class="print-q-num">प्रश्न ${displayNum + 1}: </span> <span class="question-text">${qData.question}</span>`;
+            qT.innerHTML = `<span class="print-q-num">${displayNum + 1}. </span> <span class="question-text">${qData.question}</span>`;
                 qContent.appendChild(qT);
                 
                 if (qData.image) {
