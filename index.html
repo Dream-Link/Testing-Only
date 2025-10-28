@@ -728,10 +728,11 @@
     }
 
     /* ग्रिड लेआउट को डिसेबल करें */
-    #question-paper-page[data-view-mode="only-option"] .options-grid {
-         grid-template-columns: 1fr;
+   /* ग्रिड लेआउट को डिसेबल करें (display: grid को override करें) */
+    #question-paper-page[data-view-mode="only-option"] .options-list.options-grid {
+         display: flex; /* 'display: grid' को 'display: flex' से बदलें */
+         grid-template-columns: none; /* ग्रिड सेटिंग को रीसेट करें */
     }
-
     /* सही उत्तर को छिपा दें */
     #question-paper-page[data-view-mode="only-option"] .correct-answer-display {
         display: none;
