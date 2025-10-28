@@ -660,41 +660,83 @@
     /* "All Series" - Show info bar (default behavior, no rule needed) */
 
     /* "Only Option" - Hide info bar, question text, and image */
+  /* ================= START: ONLY OPTION MODE (OMR LAYOUT) ================= */
+
+    /* "Only Option" - OMR की तरह हॉरिजॉन्टल लेआउट */
     #question-paper-page[data-view-mode="only-option"] .question-info-bar {
         display: none;
     }
     #question-paper-page[data-view-mode="only-option"] .question-text,
     #question-paper-page[data-view-mode="only-option"] .question-content img {
-        display: none;
+        display: none; /* प्रश्न टेक्स्ट और इमेज को छिपाएं */
     }
 
-    /* Style options as horizontal bubbles */
-   #question-paper-page[data-view-mode="only-option"] .options-list {
+    /* पूरे प्रश्न ब्लॉक को एक हॉरिजॉन्टल लाइन बनाएं */
+    #question-paper-page[data-view-mode="only-option"] .question-block {
+        display: flex;
         flex-direction: row;
-        justify-content: flex-start; /* सेंटर की जगह शुरू से अलाइन करें */
-        gap: 0.4rem; /* गैप थोड़ा कम करें */
-        flex-wrap: nowrap; /* यह उन्हें एक लाइन में रखेगा */
-        overflow-x: auto; /* अगर जगह कम हो तो हॉरिजॉन्टल स्क्रॉल देगा */
-        padding-left: 0.5rem; /* थोड़ा पैडिंग ताकि चिपके नहीं */
-        padding-right: 0.5rem;
+        align-items: center;
+        justify-content: flex-start;
+        padding: 0.5rem 1rem; /* ब्लॉक के अंदर थोड़ी पैडिंग */
+        border-bottom: 1px dashed var(--border-color); /* प्रश्नों के बीच हल्की लाइन */
     }
-   #question-paper-page[data-view-mode="only-option"] .options-list li {
+
+    /* प्रश्न संख्या (h3) वाले हिस्से को स्टाइल करें */
+    #question-paper-page[data-view-mode="only-option"] .question-content {
         padding: 0;
-        width: 40px; /* चौड़ाई थोड़ी कम करें */
-        height: 40px; /* ऊंचाई थोड़ी कम करें */
-        flex-shrink: 0; /* यह सिकुड़ने (shrinking) से रोकेगा */
+        margin: 0 1rem 0 0; /* संख्या और गोलों के बीच गैप */
+        flex-shrink: 0; /* इसे सिकुड़ने न दें */
+    }
+    #question-paper-page[data-view-mode="only-option"] .question-content h3 {
+        margin: 0;
+        font-size: 1rem;
+        font-weight: 700;
+    }
+
+    /* ऑप्शन (ul) वाले कंटेनर को स्टाइल करें */
+    #question-paper-page[data-view-mode="only-option"] .options-container {
+        padding: 0;
+        background-color: transparent;
+        flex-grow: 1; /* बची हुई जगह ले लें */
+    }
+
+    /* ऑप्शन की लिस्ट (ul) को हॉरिजॉन्टल बनाएं */
+    #question-paper-page[data-view-mode="only-option"] .options-list {
+        flex-direction: row;
+        justify-content: flex-start;
+        gap: 0.5rem;
+        flex-wrap: wrap; /* छोटी स्क्रीन पर रैप करने दें */
+        overflow-x: visible;
+        padding: 0;
+    }
+
+    /* ऑप्शन के गोलों (li) को स्टाइल करें */
+    #question-paper-page[data-view-mode="only-option"] .options-list li {
+        padding: 0;
+        width: 40px; 
+        height: 40px; 
+        flex-shrink: 0; 
         display: grid;
         place-items: center;
         border-radius: 50%;
         font-weight: 700;
     }
+
+    /* ऑप्शन के टेक्स्ट (A, B) के अलावा बाकी टेक्स्ट छिपा दें */
     #question-paper-page[data-view-mode="only-option"] .options-list .option-text {
-        display: none; /* Hide option text */
-    }
-    #question-paper-page[data-view-mode="only-option"] .options-grid {
-         grid-template-columns: 1fr; /* Disable grid for this view */
+        display: none;
     }
 
+    /* ग्रिड लेआउट को डिसेबल करें */
+    #question-paper-page[data-view-mode="only-option"] .options-grid {
+         grid-template-columns: 1fr;
+    }
+
+    /* सही उत्तर को छिपा दें */
+    #question-paper-page[data-view-mode="only-option"] .correct-answer-display {
+        display: none;
+    }
+    /* ================= END: ONLY OPTION MODE (OMR LAYOUT) ================= */
     /* Adjust header title on mobile to prevent overlap */
     @media (max-width: 768px) {
         #view-mode-selector {
@@ -1460,7 +1502,7 @@
             const seriesOrder = currentShiftData.seriesOrder || {};
             const qIndices = seriesOrder[series] || Array.from({length: allQuestions.length}, (_, i) => i + 1);
             
-            const optionLabels = ['A)', 'B)', 'C)', 'D)', 'E)'];
+           const optionLabels = ['A', 'B', 'C', 'D', 'E'];
             const OPTION_LENGTH_THRESHOLD = 40; 
 
             qIndices.forEach((qIndex, displayNum) => {
