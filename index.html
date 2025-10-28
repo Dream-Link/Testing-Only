@@ -798,6 +798,15 @@
             -webkit-overflow-scrolling: touch; /* iOS पर स्मूथ स्क्रॉलिंग */
             scroll-behavior: smooth;
             padding-bottom: 1rem;
+            /* --- START: SCROLLBAR HIDE --- */
+            scrollbar-width: none;  /* Firefox */
+            -ms-overflow-style: none; /* IE and Edge */
+            cursor: grab; /* माउस ड्रैग के लिए कर्सर */
+        }
+        #question-paper-page[data-view-mode="card-mode"] #questions-container::-webkit-scrollbar {
+            display: none; /* Chrome, Safari, and Opera */
+        }
+        /* --- END: SCROLLBAR HIDE --- */
         }
 
         /* 6. प्रत्येक प्रश्न को एक फुल-स्क्रीन कार्ड बनाएं */
@@ -842,6 +851,118 @@
             }
         }
         /* ======================== END: CARD VIEW MODE CSS ======================= */
+        /* ======================= START: JUMP TO QUESTION CSS ======================= */
+        #jump-to-q-btn {
+            position: absolute;
+            left: 55px; /* View mode बटन के बगल में */
+            top: 10px;
+            z-index: 10;
+            background: none;
+            border: none;
+            font-size: 0.9rem;
+            cursor: pointer;
+            color: var(--secondary-color);
+            padding: 0.3rem 0.5rem;
+            border-radius: 4px;
+            transition: background-color 0.2s;
+        }
+        #jump-to-q-btn:hover {
+            background-color: var(--subtle-bg);
+        }
+
+        #jump-modal-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-color: rgba(0,0,0,0.6);
+            z-index: 3000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+            opacity: 1;
+            transition: opacity 0.2s ease;
+        }
+        #jump-modal-overlay.jump-modal-hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+        #jump-modal {
+            background-color: var(--surface-color);
+            color: var(--font-color);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-md);
+            width: 100%;
+            max-width: 600px; /* पॉपअप की अधिकतम चौड़ाई */
+            padding: 1.5rem;
+            max-height: 80vh; /* ऊंचाई सीमित करें */
+            display: flex;
+            flex-direction: column;
+        }
+        #jump-modal h3 {
+            margin: 0 0 1rem 0;
+            text-align: center;
+            font-size: 1.2rem;
+        }
+        #jump-grid-container {
+            display: grid;
+            /* ग्रिड को ऑटो-फिट करें */
+            grid-template-columns: repeat(auto-fill, minmax(40px, 1fr));
+            gap: 0.5rem;
+            overflow-y: auto; /* ज़्यादा प्रश्न होने पर स्क्रॉल करें */
+            padding: 0.5rem;
+            border: 1px solid var(--border-color);
+            border-radius: 0.375rem;
+            flex-grow: 1;
+        }
+        .jump-q-btn {
+            width: 40px; height: 40px;
+            border-radius: 50%; /* गोल बटन */
+            border: 1px solid var(--border-color);
+            background-color: var(--surface-color);
+            color: var(--font-color);
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: grid;
+            place-items: center;
+            transition: all 0.2s;
+        }
+        .jump-q-btn:hover {
+            background-color: var(--subtle-bg);
+            border-color: var(--primary-color);
+        }
+        /* उत्तर की स्थिति के अनुसार रंग */
+        .jump-q-btn[data-status="correct"] { background-color: var(--success-bg); border-color: var(--success-color); }
+        .jump-q-btn[data-status="incorrect"] { background-color: var(--danger-bg); border-color: var(--danger-color); }
+        .jump-q-btn[data-status="skipped"] { background-color: var(--special-bg); border-color: var(--warning-color); }
+        .jump-q-btn[data-status="deleted"] { background-color: #e9ecef; color: #aaa; text-decoration: line-through; }
+
+        #close-jump-modal-btn {
+            margin-top: 1.5rem;
+            padding: 0.6rem 1.2rem;
+            border-radius: 0.375rem;
+            border: none;
+            background-color: var(--primary-color);
+            color: white;
+            cursor: pointer;
+            font-weight: 600;
+            align-self: flex-end; /* बटन को दाएं कोने में रखें */
+        }
+
+        /* मोबाइल के लिए एडजस्टमेंट */
+        @media (max-width: 768px) {
+            #jump-to-q-btn {
+                left: 40px; /* मोबाइल पर थोड़ी जगह बदलें */
+                top: 8px;
+            }
+            .header h1 {
+                /* हेडर टाइटल को बटन से टकराने से रोकें */
+                padding-left: 60px; 
+                padding-right: 60px;
+            }
+        }
+        /* ======================== END: JUMP TO QUESTION CSS ======================= */
+        
     </style>
     
 </head>
@@ -977,6 +1098,7 @@
                     <li data-view="card-mode"><i class="fas fa-clone"></i> Card Mode</li>
                 </ul>
             </div>
+            <button id="jump-to-q-btn" title="Jump to Question"><i class="fas fa-th-large"></i></button>
             <h1 id="shift-title">Shift Title</h1>
             <button id="reset-answers-btn" title="Reset Answers"><i class="fas fa-sync-alt"></i></button>
                 <div class="header-controls">
@@ -1098,6 +1220,14 @@
           </div>
        </div>
     </div>
+    <div id="jump-modal-overlay" class="jump-modal-hidden">
+        <div id="jump-modal">
+            <h3 id="jump-modal-title">Jump to Question</h3>
+            <div id="jump-grid-container">
+                </div>
+            <button id="close-jump-modal-btn">Close</button>
+        </div>
+    </div>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
     <script src="questions-data.js"></script>
@@ -1121,7 +1251,62 @@
        let currentCardIndex = 0, totalCards = 0;
 
     document.addEventListener('DOMContentLoaded', () => {
+// --- START: CARD MODE MOUSE DRAG ---
+        let isDown = false;
+        let startX;
+        let scrollLeft;
+        const slider = document.getElementById('questions-container');
 
+        if (slider) {
+            slider.addEventListener('mousedown', (e) => {
+                // यह सिर्फ कार्ड-मोड में काम करे
+                if (questionPaperPage.dataset.viewMode !== 'card-mode') return;
+                isDown = true;
+                slider.style.cursor = 'grabbing';
+                slider.style.scrollBehavior = 'auto'; // ड्रैग करते समय स्मूथ स्क्रॉल बंद करें
+                startX = e.pageX - slider.offsetLeft;
+                scrollLeft = slider.scrollLeft;
+            });
+
+            slider.addEventListener('mouseleave', () => {
+                if (questionPaperPage.dataset.viewMode !== 'card-mode') return;
+                isDown = false;
+                slider.style.cursor = 'grab';
+                if (slider.style.scrollBehavior === 'auto') { // अगर ड्रैग हो रहा था
+                   snapToCard(); // माउस छोड़ने पर कार्ड पर स्नैप करें
+                }
+            });
+
+            slider.addEventListener('mouseup', () => {
+                if (questionPaperPage.dataset.viewMode !== 'card-mode') return;
+                isDown = false;
+                slider.style.cursor = 'grab';
+                 if (slider.style.scrollBehavior === 'auto') { // अगर ड्रैग हो रहा था
+                   snapToCard(); // माउस छोड़ने पर कार्ड पर स्नैप करें
+                }
+            });
+
+            slider.addEventListener('mousemove', (e) => {
+                if (!isDown || questionPaperPage.dataset.viewMode !== 'card-mode') return;
+                e.preventDefault();
+                const x = e.pageX - slider.offsetLeft;
+                const walk = (x - startX) * 2; // '2' से गुणा करने पर ड्रैग तेज़ लगता है
+                slider.scrollLeft = scrollLeft - walk;
+            });
+
+            // ड्रैग के बाद पास वाले कार्ड पर स्नैप करने के लिए हेल्पर फ़ंक्शन
+            function snapToCard() {
+                if (questionPaperPage.dataset.viewMode !== 'card-mode') return;
+                
+                slider.style.scrollBehavior = 'smooth'; // स्नैप करने के लिए स्मूथ स्क्रॉल वापस चालू करें
+                const cardWidth = slider.offsetWidth;
+                const currentScroll = slider.scrollLeft;
+                const targetIndex = Math.round(currentScroll / cardWidth);
+                
+                scrollToCard(targetIndex); // यह हमारा पहले से बनाया गया फ़ंक्शन है
+            }
+        }
+        // --- END: CARD MODE MOUSE DRAG ---
         // ======================= START: THEME SELECTOR JAVASCRIPT =======================
         const themeToggleBtn = document.getElementById('theme-toggle-btn');
         // --- START: CARD NAVIGATION BUTTON CLICKS ---
@@ -1143,10 +1328,47 @@
             });
         }
         // --- END: CARD NAVIGATION BUTTON CLICKS ---
+        // --- START: JUMP TO QUESTION MODAL ---
+        const jumpToQBtn = document.getElementById('jump-to-q-btn');
+        const jumpModalOverlay = document.getElementById('jump-modal-overlay');
+        const closeJumpModalBtn = document.getElementById('close-jump-modal-btn');
+        const jumpGridContainer = document.getElementById('jump-grid-container');
+
+        if (jumpToQBtn) {
+            jumpToQBtn.addEventListener('click', () => {
+                populateJumpGrid(); // ग्रिड को ताज़ा करें
+                jumpModalOverlay.classList.remove('jump-modal-hidden');
+            });
+        }
+        if (closeJumpModalBtn) {
+            closeJumpModalBtn.addEventListener('click', () => {
+                jumpModalOverlay.classList.add('jump-modal-hidden');
+            });
+        }
+        if (jumpModalOverlay) {
+            jumpModalOverlay.addEventListener('click', (e) => {
+                if (e.target === jumpModalOverlay) { // सिर्फ बाहरी काली जगह पर क्लिक करने पर बंद हो
+                    jumpModalOverlay.classList.add('jump-modal-hidden');
+                }
+            });
+        }
+        if (jumpGridContainer) {
+            jumpGridContainer.addEventListener('click', (e) => {
+                const jumpBtn = e.target.closest('.jump-q-btn');
+                if (jumpBtn) {
+                    const qId = parseInt(jumpBtn.dataset.qid);
+                    const qIndex = parseInt(jumpBtn.dataset.index); // 0-आधारित इंडेक्स
+                    jumpToQuestion(qId, qIndex);
+                    jumpModalOverlay.classList.add('jump-modal-hidden');
+                }
+            });
+        }
+        // --- END: JUMP TO QUESTION MODAL ---
         const themeDropdown = document.getElementById('theme-dropdown');
         const themeSelector = document.querySelector('.theme-selector');
         const root = document.documentElement;
         const THEME_KEY = 'selected_theme_mps';
+        
 
         if (themeToggleBtn) { 
             const applyTheme = (theme) => {
@@ -1518,6 +1740,69 @@ function scrollToCard(index) {
             prevBtn.disabled = (currentCardIndex <= 0);
             nextBtn.disabled = (currentCardIndex >= totalCards - 1);
         }
+        function populateJumpGrid() {
+            const jumpGridContainer = document.getElementById('jump-grid-container');
+            const jumpModalTitle = document.getElementById('jump-modal-title');
+            if (!jumpGridContainer || !currentShiftData.seriesOrder) return;
+
+            // वर्तमान सीरीज के अनुसार प्रश्नों का क्रम लें
+            const seriesOrder = currentShiftData.seriesOrder[currentSeries] || Array.from({length: allQuestions.length}, (_, i) => i + 1);
+            jumpGridContainer.innerHTML = ''; // ग्रिड को खाली करें
+            jumpModalTitle.textContent = `Jump to Question (1-${seriesOrder.length})`;
+
+            seriesOrder.forEach((qIndex, displayIndex) => {
+                const qData = allQuestions[qIndex - 1];
+                if (!qData) return;
+
+                const btn = document.createElement('button');
+                btn.className = 'jump-q-btn';
+                btn.textContent = displayIndex + 1; // प्रश्न संख्या (1-आधारित)
+                btn.dataset.qid = qData.id; // असली प्रश्न ID
+                btn.dataset.index = displayIndex; // कार्ड मोड के लिए 0-आधारित इंडेक्स
+
+                // प्रश्न की स्थिति (status) सेट करें
+                const status = getQuestionStatus(qData.id);
+                btn.dataset.status = qData.deleted ? 'deleted' : status;
+                
+                jumpGridContainer.appendChild(btn);
+            });
+        }
+
+        function jumpToQuestion(qId, displayIndex) {
+            const currentViewMode = questionPaperPage.dataset.viewMode;
+
+            if (currentViewMode === 'card-mode') {
+                // कार्ड मोड में, हमें यह पक्का करना होगा कि 'All' फ़िल्टर सक्रिय है
+                if (activeFilter !== 'all') {
+                    activeFilter = 'all';
+                    updateActiveFilterButton('all');
+                    // 'All' फ़िल्टर के साथ प्रश्नों को फिर से लोड करें
+                    displayQuestions(currentSeries, 'all');
+                }
+                // अब सही इंडेक्स पर स्क्रॉल करें
+                scrollToCard(displayIndex); 
+            } else {
+                // लिस्ट मोड में (With Option, All Series, Only Option)
+                // अगर प्रश्न फ़िल्टर के कारण छिपा है, तो 'All' फ़िल्टर पर जाएँ
+                if (activeFilter !== 'all') {
+                    activeFilter = 'all';
+                    updateActiveFilterButton('all');
+                    displayQuestions(currentSeries, 'all');
+                }
+
+                // अब प्रश्न ब्लॉक को खोजें और उस तक स्क्रॉल करें
+                const qBlock = document.querySelector(`.question-block[data-question-id='${qId}']`);
+                if (qBlock) {
+                    qBlock.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    // प्रश्न को हाईलाइट करें
+                    qBlock.style.transition = 'outline 0.1s ease-in-out';
+                    qBlock.style.outline = '3px solid var(--primary-color)';
+                    setTimeout(() => {
+                        qBlock.style.outline = 'none';
+                    }, 1500);
+                }
+            }
+        }
        // ======================= START: MODIFIED Firebase FUNCTION =======================
         function sendAnswerToFirebase(userId) {
             if (!currentShiftId || !db) return;
@@ -1834,6 +2119,14 @@ function scrollToCard(index) {
                 answerDisplay.innerHTML = `Correct Ans: <strong style="color: var(--success-color);">${dynamicCorrectAnswer}</strong>`;
                 optionsContainer.appendChild(answerDisplay);
             }
+            // --- START: JUMP MODAL LIVE UPDATE ---
+            // पॉपअप के अंदर संबंधित बटन को खोजें
+            const jumpBtn = document.querySelector(`#jump-grid-container .jump-q-btn[data-qid='${qId}']`);
+            if (jumpBtn) {
+                // उसका status अपडेट करें ताकि रंग बदल जाए
+                jumpBtn.dataset.status = isDeleted ? 'deleted' : status;
+            }
+            // --- END: JUMP MODAL LIVE UPDATE ---
         }
    
         questionsContainer.addEventListener('click', (e) => {
