@@ -75,7 +75,28 @@
             padding: 1rem;
             text-align: center;
         }
-        .selector-container h2 { font-size: 2.25rem; font-weight: 700; margin: 0 0 0.5rem; }
+        .selector-container h2 {
+            font-size: 2.75rem; /* हेडिंग को थोड़ा बड़ा किया */
+            font-weight: 900; /* और ज़्यादा बोल्ड किया */
+            margin: 0 0 0.5rem;
+            
+            /* यह टेक्स्ट को रंगीन ग्रेडिएंट बनाता है */
+            background: linear-gradient(90deg, 
+                var(--primary-color), /* नीला */
+                #9b59b6, /* बैंगनी */
+                var(--success-color), /* हरा */
+                var(--primary-color) /* वापस नीला */
+            );
+            background-size: 200% auto; /* एनीमेशन के लिए साइज़ दोगुना */
+            
+            /* यह बैकग्राउंड को टेक्स्ट के आकार में काटता है */
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent; /* टेक्स्ट का अपना रंग हटाता है */
+            
+            /* एनीमेशन लागू करता है */
+            animation: text-gradient-flow 5s linear infinite;
+        }
         .selector-container .subtitle { font-size: 1.1rem; color: var(--font-color-light); margin-bottom: 3rem; }
         .shift-selector { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.5rem; }
     .shift-btn {
@@ -1018,7 +1039,7 @@
         /* 5. सभी आइकन्स और बटन्स को छोटा करें */
 
         /* पंक्ति 1 के आइकन */
-        #view-mode-btn, #jump-to-q-btn, #reset-answers-btn {
+      #view-mode-btn, #jump-to-q-btn, #reset-answers-btn, #import-export-btn {
             font-size: 0.8rem; /* छोटा फ़ॉन्ट */
             padding: 0.2rem 0.4rem; /* छोटी पैडिंग */
             margin: 0; /* फालतू मार्जिन हटाया */
@@ -1053,6 +1074,11 @@
             }
         }
         /* ================== END: HEADER REDESIGN CSS ================== */
+        /* सुझाव 1 के लिए एनीमेशन */
+        @keyframes text-gradient-flow {
+            0% { background-position: 200% center; }
+            100% { background-position: 0% center; }
+        }
     </style>
     
 </head>
@@ -1193,6 +1219,7 @@
                             </ul>
                         </div>
                         <button id="jump-to-q-btn" title="Jump to Question"><i class="fas fa-th-large"></i></button>
+                        <button id="import-export-btn" title="Import/Export Answers"><i class="fas fa-exchange-alt"></i></button>
                     </div>
                     <button id="reset-answers-btn" title="Reset Answers"><i class="fas fa-sync-alt"></i></button>
                 </div>
@@ -2297,6 +2324,12 @@ function scrollToCard(index) {
         });
         
         resetBtn.addEventListener('click', () => {
+            // --- START: Import/Export Button Listener ---
+        const importExportBtn = document.getElementById('import-export-btn');
+        if (importExportBtn) {
+            importExportBtn.addEventListener('click', handleImportExport);
+        }
+        // --- END: Import/Export Button Listener ---
             if (confirm("क्या आप वाकई इस पेपर के लिए अपने सभी उत्तर हटाना चाहते हैं?")) {
                 userAnswers = {};
                 saveData();
@@ -2619,7 +2652,7 @@ function scrollToCard(index) {
         } else {
             showHomePage();
         }
-    });
+    }); 
 
     if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
@@ -2628,6 +2661,82 @@ function scrollToCard(index) {
                 .catch(error => { console.log('ServiceWorker registration failed: ', error); });
         });
     }
+       // ======================= START: IMPORT/EXPORT STRING LOGIC =======================
+        function handleImportExport() {
+            if (!currentShiftId || !currentSeries) {
+                alert("कृपया पहले एक शिफ़्ट और सेट चुनें।");
+                return;
+            }
+
+            // 1. वर्तमान उत्तरों से एक्सपोर्ट स्ट्रिंग बनाएं
+            const answerPairs = Object.entries(userAnswers).map(([qId, ans]) => `${qId}=${ans}`);
+            const exportString = `${currentShiftId}:${currentSeries}:${answerPairs.join(',')}`;
+
+            // 2. यूज़र से स्ट्रिंग इम्पोर्ट करने के लिए पूछें (और एक्सपोर्ट वाली दिखाएँ)
+            const newString = prompt(
+                "EXPORT STRING (Copy this):\n\n" + exportString + 
+                "\n\nIMPORT STRING (Paste here to load answers):",
+                "" // पेस्ट करने के लिए खाली जगह
+            );
+
+            // 3. अगर यूज़र ने 'Cancel' दबाया या कुछ नहीं भरा
+            if (newString === null || newString.trim() === "") {
+                return; // कुछ न करें
+            }
+
+            // 4. इम्पोर्ट स्ट्रिंग को प्रोसेस करें
+            const parts = newString.trim().split(':');
+            if (parts.length < 2) { // कम से कम shift:series: होना चाहिए
+                alert("अमान्य स्ट्रिंग फॉर्मेट।");
+                return;
+            }
+
+            const [importShiftId, importSeries, importAnswersStr = ""] = parts;
+
+            // 5. वैलिडेशन (जो आपने कहा था)
+            if (importShiftId !== currentShiftId) {
+                alert(`त्रुटि: यह स्ट्रिंग ${importShiftId} शिफ़्ट की है।\nआपकी वर्तमान शिफ़्ट ${currentShiftId} है।`);
+                return;
+            }
+            if (importSeries !== currentSeries) {
+                alert(`त्रुटि: यह स्ट्रिंग ${importSeries} सेट की है।\nआपका वर्तमान सेट ${currentSeries} है।`);
+                return;
+            }
+
+            // 6. वैलिडेशन पास, अब उत्तरों को लागू करें
+            try {
+                const newAnswers = {};
+                let importedCount = 0;
+                
+                if (importAnswersStr.length > 0) {
+                    const importPairs = importAnswersStr.split(',');
+                    for (const pair of importPairs) {
+                        const pairParts = pair.split('=');
+                        if (pairParts.length === 2) {
+                            const qId = parseInt(pairParts[0]);
+                            const ans = pairParts[1];
+                            
+                            // जांचें कि यह qId इस शिफ़्ट में मौजूद है या नहीं
+                            if (ans && allQuestions.some(q => q.id === qId)) {
+                                newAnswers[qId] = ans;
+                                importedCount++;
+                            }
+                        }
+                    }
+                }
+
+                // सफलता: नए उत्तरों को लागू करें
+                userAnswers = newAnswers; // पुराने उत्तरों को हटाकर नए सेट करें
+                saveData(); // localStorage में सेव करें
+                displayQuestions(currentSeries, activeFilter); // स्क्रीन रिफ्रेश करें (यह updateSummary() को भी कॉल करेगा)
+                alert(`सफलतापूर्वक ${importedCount} उत्तर इम्पोर्ट किए गए!`);
+
+            } catch (error) {
+                console.error("Import error:", error);
+                alert("स्ट्रिंग को प्रोसेस करने में त्रुटि हुई।");
+            }
+        }
+        // ======================== END: IMPORT/EXPORT STRING LOGIC ========================
 </script>
 </body>
 </html>
