@@ -669,16 +669,20 @@
     }
 
     /* Style options as horizontal bubbles */
-    #question-paper-page[data-view-mode="only-option"] .options-list {
+   #question-paper-page[data-view-mode="only-option"] .options-list {
         flex-direction: row;
-        justify-content: center;
-        gap: 0.5rem;
-        flex-wrap: wrap;
+        justify-content: flex-start; /* सेंटर की जगह शुरू से अलाइन करें */
+        gap: 0.4rem; /* गैप थोड़ा कम करें */
+        flex-wrap: nowrap; /* यह उन्हें एक लाइन में रखेगा */
+        overflow-x: auto; /* अगर जगह कम हो तो हॉरिजॉन्टल स्क्रॉल देगा */
+        padding-left: 0.5rem; /* थोड़ा पैडिंग ताकि चिपके नहीं */
+        padding-right: 0.5rem;
     }
-    #question-paper-page[data-view-mode="only-option"] .options-list li {
+   #question-paper-page[data-view-mode="only-option"] .options-list li {
         padding: 0;
-        width: 45px;
-        height: 45px;
+        width: 40px; /* चौड़ाई थोड़ी कम करें */
+        height: 40px; /* ऊंचाई थोड़ी कम करें */
+        flex-shrink: 0; /* यह सिकुड़ने (shrinking) से रोकेगा */
         display: grid;
         place-items: center;
         border-radius: 50%;
@@ -710,6 +714,9 @@
             padding-left: 30px; /* Add padding to avoid overlap */
             padding-right: 30px;
         }
+    }
+        #question-paper-page[data-view-mode="only-option"] .correct-answer-display {
+        display: none;
     }
     /* ======================== END: NEW VIEW MODE CSS ======================= */
     </style>
@@ -1736,8 +1743,7 @@
 
             const styles = document.getElementById('main-styles').innerHTML;
             const fontLink = `<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@400;500;600;700&display=swap" rel="stylesheet">`;
-            const mathJaxScript = `<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"><\/script>`;
-            const mathJaxConfig = `<script>MathJax = { tex: { inlineMath: [['$', '$'], ['\\(', '\\)']] } };<\/script>`;
+           
             const printLogic = `
                 <script>
                     (() => {
@@ -1756,9 +1762,7 @@
                             }
                         };
                         const runPrintProcess = () => {
-                            const mathJaxPromise = (typeof MathJax !== 'undefined' && MathJax.typesetPromise)
-                                ? MathJax.startup.promise.then(() => MathJax.typesetPromise())
-                                : Promise.resolve();
+                          const mathJaxPromise = Promise.resolve();
                             const imagePromises = [...document.querySelectorAll('img')].map(img => {
                                 if (img.complete) return Promise.resolve();
                                 return new Promise(resolve => { img.onload = resolve; img.onerror = resolve; });
@@ -1773,10 +1777,10 @@
                 <\/script>
             `;
           const printHideInfoClass = (document.getElementById('question-paper-page').dataset.viewMode === 'all-series') ? '' : 'hide-q-info';
-        const frameContent = `
-            <html><head><title>Print</title>${fontLink}<style>${styles}</style>${mathJaxConfig}${mathJaxScript}</head>
-            <body class="${bodyClass} ${printHideInfoClass}">
-                ${content}${printLogic}</body></html>`;
+      const frameContent = `
+        <html><head><title>Print</title>${fontLink}<style>${styles}</style></head>
+        <body class="${bodyClass} ${printHideInfoClass}">
+            ${content}${printLogic}</body></html>`;
 
             printFrame.contentDocument.open();
             printFrame.contentDocument.write(frameContent);
