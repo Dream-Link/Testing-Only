@@ -762,6 +762,86 @@
         display: none;
     }
     /* ======================== END: NEW VIEW MODE CSS ======================= */
+        /* ======================= START: CARD VIEW MODE CSS ======================= */
+        
+        /* 1. जब कार्ड मोड सक्रिय न हो, तो नेविगेशन को छिपा दें */
+        #question-paper-page:not([data-view-mode="card-mode"]) #card-navigation {
+            display: none !important;
+        }
+
+        /* 2. जब कार्ड मोड सक्रिय हो, तो नेविगेशन दिखाएं */
+        #question-paper-page[data-view-mode="card-mode"] #card-navigation {
+            display: flex;
+        }
+        #card-navigation button:disabled {
+            background-color: var(--secondary-color);
+            cursor: not-allowed;
+        }
+
+        /* 3. कार्ड मोड में कंटेनर को फुल-विड्थ करें */
+        #question-paper-page[data-view-mode="card-mode"] .container {
+            max-width: 100%;
+            padding: 0;
+            margin-top: 1rem;
+        }
+
+        /* 4. कार्ड मोड में फ़िल्टर बार को छिपा दें */
+        #question-paper-page[data-view-mode="card-mode"] .controls-bar {
+            display: none;
+        }
+
+        /* 5. हॉरिजॉन्टल स्लाइडर बनाएं */
+        #question-paper-page[data-view-mode="card-mode"] #questions-container {
+            display: flex;
+            overflow-x: scroll;
+            scroll-snap-type: x mandatory; /* यह इसे कार्ड की तरह स्नैप (चिपकने) में मदद करता है */
+            -webkit-overflow-scrolling: touch; /* iOS पर स्मूथ स्क्रॉलिंग */
+            scroll-behavior: smooth;
+            padding-bottom: 1rem;
+        }
+
+        /* 6. प्रत्येक प्रश्न को एक फुल-स्क्रीन कार्ड बनाएं */
+        #question-paper-page[data-view-mode="card-mode"] .question-block {
+            flex: 0 0 100vw; /* प्रत्येक कार्ड की चौड़ाई 100% (viewport width) होगी */
+            scroll-snap-align: center; /* कार्ड को बीच में स्नैप करें */
+            border: none;
+            border-radius: 0;
+            margin-bottom: 0;
+            box-shadow: none;
+            overflow-y: auto; /* अगर प्रश्न लंबा है तो कार्ड के अंदर स्क्रॉलिंग हो */
+            height: calc(100vh - 270px); /* स्क्रीन के हिसाब से ऊंचाई (हेडर और नेविगेशन को छोड़कर) */
+        }
+        
+        /* 7. कार्ड के अंदर पैडिंग दें */
+        #question-paper-page[data-view-mode="card-mode"] .question-content,
+        #question-paper-page[data-view-mode="card-mode"] .options-container {
+            padding-left: 1.5rem;
+            padding-right: 1.5rem;
+        }
+
+        /* 8. प्रश्न की जानकारी (सीरीज नंबर) को छिपा दें */
+        #question-paper-page[data-view-mode="card-mode"] .question-info-bar {
+            display: none;
+        }
+
+        /* 9. मोबाइल के लिए एडजस्टमेंट */
+        @media (max-width: 768px) {
+            #question-paper-page[data-view-mode="card-mode"] .question-block {
+                height: calc(100vh - 220px); /* मोबाइल हेडर के हिसाब से ऊंचाई */
+            }
+            #card-navigation {
+                padding: 0.5rem;
+                margin: 0 0.75rem 1rem 0.75rem;
+            }
+            #card-navigation button {
+                padding: 0.5rem 0.8rem;
+                font-size: 0.9rem;
+            }
+            #card-counter {
+                font-size: 1rem;
+            }
+        }
+        /* ======================== END: CARD VIEW MODE CSS ======================= */
     </style>
     
 </head>
@@ -894,6 +974,7 @@
                     <li data-view="with-option"><i class="fas fa-list-ul"></i> With Option</li>
                     <li data-view="all-series"><i class="fas fa-sitemap"></i> With All Series Q.N.</li>
                     <li data-view="only-option"><i class="fas fa-dot-circle"></i> Only Option</li>
+                    <li data-view="card-mode"><i class="fas fa-clone"></i> Card Mode</li>
                 </ul>
             </div>
             <h1 id="shift-title">Shift Title</h1>
@@ -930,7 +1011,13 @@
                 </div>
             </div>
             <div id="questions-container"></div>
+            <div id="card-navigation" style="display: none; justify-content: space-between; align-items: center; padding: 1rem; background-color: var(--surface-color); border: 1px solid var(--border-color); border-radius: var(--border-radius); margin: 0 1.5rem 1.5rem 1.5rem;">
+                <button id="prev-question-btn" style="background-color: var(--primary-color); color: white; border: none; padding: 0.6rem 1.2rem; border-radius: 0.375rem; cursor: pointer; font-weight: 600;"><i class="fas fa-arrow-left"></i> Previous</button>
+                <span id="card-counter" style="font-size: 1.1rem; font-weight: 600; color: var(--font-color);">1 / 100</span>
+                <button id="next-question-btn" style="background-color: var(--primary-color); color: white; border: none; padding: 0.6rem 1.2rem; border-radius: 0.375rem; cursor: pointer; font-weight: 600;">Next <i class="fas fa-arrow-right"></i></button>
+            </div>
         </div>
+        
     </div>
 
     <div id="print-modal-overlay">
@@ -1031,11 +1118,31 @@
     // END: FIREBASE CONFIG (ADDED)
 
     let currentShiftId = null, allQuestions = [], userAnswers = {}, currentSeries = '', activeFilter = 'all', currentShiftData = {};
+       let currentCardIndex = 0, totalCards = 0;
 
     document.addEventListener('DOMContentLoaded', () => {
 
         // ======================= START: THEME SELECTOR JAVASCRIPT =======================
         const themeToggleBtn = document.getElementById('theme-toggle-btn');
+        // --- START: CARD NAVIGATION BUTTON CLICKS ---
+        const prevBtn = document.getElementById('prev-question-btn');
+        const nextBtn = document.getElementById('next-question-btn');
+
+        if (prevBtn && nextBtn) {
+            prevBtn.addEventListener('click', () => {
+                if (currentCardIndex > 0) {
+                    scrollToCard(currentCardIndex - 1);
+                }
+            });
+
+            nextBtn.addEventListener('click', () => {
+                // totalCards को यहाँ अपडेट करने की ज़रूरत नहीं, updateCardNavigation कर देगा
+                if (currentCardIndex < totalCards - 1) {
+                    scrollToCard(currentCardIndex + 1);
+                }
+            });
+        }
+        // --- END: CARD NAVIGATION BUTTON CLICKS ---
         const themeDropdown = document.getElementById('theme-dropdown');
         const themeSelector = document.querySelector('.theme-selector');
         const root = document.documentElement;
@@ -1095,7 +1202,8 @@
     const viewIcons = {
         'with-option': { icon: 'fa-list-ul', text: 'With Option' },
         'all-series': { icon: 'fa-sitemap', text: 'All Series' },
-        'only-option': { icon: 'fa-dot-circle', text: 'Only Option' }
+        'only-option': { icon: 'fa-dot-circle', text: 'Only Option' },
+        'card-mode': { icon: 'fa-clone', text: 'Card Mode' }
     };
 
     function updateViewModeButton(mode) {
@@ -1122,12 +1230,22 @@
             const li = e.target.closest('li[data-view]');
             if (li) {
                 const newMode = li.dataset.view;
-                questionPaperPage.dataset.viewMode = newMode;
+                questionPaperPage.dataset.viewMode = newMode; // यह CSS को सक्रिय करता है
                 updateViewModeButton(newMode);
                 if (currentShiftId) {
                     localStorage.setItem(`viewMode_${currentShiftId}`, newMode);
                 }
                 viewModeDropdown.classList.add('hidden');
+                
+                // --- START: कार्ड मोड के लिए लॉजिक ---
+                // अगर कार्ड मोड में जा रहे हैं, तो फ़िल्टर को 'all' पर सेट करें
+                if (newMode === 'card-mode') {
+                    activeFilter = 'all'; 
+                    updateActiveFilterButton('all');
+                }
+                // नए मोड को लागू करने के लिए प्रश्नों को फिर से प्रदर्शित करें
+                displayQuestions(currentSeries, activeFilter);
+                // --- END: कार्ड मोड के लिए लॉजिक ---
             }
         });
     }
@@ -1375,7 +1493,31 @@
             localStorage.setItem(`userAnswers_${currentShiftId}`, JSON.stringify(userAnswers));
             localStorage.setItem(`currentSeries_${currentShiftId}`, currentSeries);
         }
+function scrollToCard(index) {
+            const cardWidth = questionsContainer.offsetWidth;
+            if (cardWidth > 0) {
+                questionsContainer.scrollTo({
+                    left: cardWidth * index,
+                    behavior: 'smooth'
+                });
+            }
+            // नोट: onscroll इवेंट नेविगेशन को अपडेट कर देगा
+        }
 
+        function updateCardNavigation(questionCards) {
+            if (!questionCards) questionCards = document.getElementById('questions-container').querySelectorAll('.question-block');
+            totalCards = questionCards.length;
+            
+            const cardCounter = document.getElementById('card-counter');
+            const prevBtn = document.getElementById('prev-question-btn');
+            const nextBtn = document.getElementById('next-question-btn');
+
+            if (totalCards === 0 || !cardCounter || !prevBtn || !nextBtn) return;
+
+            cardCounter.textContent = `${currentCardIndex + 1} / ${totalCards}`;
+            prevBtn.disabled = (currentCardIndex <= 0);
+            nextBtn.disabled = (currentCardIndex >= totalCards - 1);
+        }
        // ======================= START: MODIFIED Firebase FUNCTION =======================
         function sendAnswerToFirebase(userId) {
             if (!currentShiftId || !db) return;
@@ -1495,6 +1637,8 @@
         }
 
         function displayQuestions(series, filter = 'all') {
+            const currentViewMode = questionPaperPage.dataset.viewMode;
+    const cardNav = document.getElementById('card-navigation');
             questionsContainer.innerHTML = '';
             currentSeries = series;
             updateSummary();
@@ -1514,7 +1658,7 @@
                 const status = getQuestionStatus(qData.id);
                 const finalStatusForFilter = isDeleted ? (userAnswers[qData.id] ? 'deleted' : 'unattempted') : status;
 
-                if (filter !== 'all' && filter !== finalStatusForFilter) return;
+              if (currentViewMode !== 'card-mode' && filter !== 'all' && filter !== finalStatusForFilter) return;
                 
                 const qB = document.createElement('div');
                 qB.className = 'question-block';
@@ -1591,7 +1735,37 @@
                 MathJax.typesetPromise([questionsContainer]).catch(function (err) {
                     console.log('MathJax error: ', err);
                 });
+                
             }
+            // --- START: CARD MODE NAVIGATION LOGIC ---
+            if (currentViewMode === 'card-mode') {
+                const questionCards = questionsContainer.querySelectorAll('.question-block');
+                totalCards = questionCards.length;
+                
+                if (totalCards > 0) {
+                    // वर्तमान कार्ड इंडेक्स का पता लगाएं या 0 पर सेट करें
+                    const scrollLeft = questionsContainer.scrollLeft;
+                    const cardWidth = questionsContainer.offsetWidth;
+                    currentCardIndex = Math.round(scrollLeft / cardWidth);
+                    if (isNaN(currentCardIndex) || currentCardIndex < 0) currentCardIndex = 0;
+                    
+                    updateCardNavigation(questionCards);
+                    
+                    // स्क्रॉल लिस्नर जोड़ें ताकि स्वाइप करने पर काउंटर अपडेट हो
+                    questionsContainer.onscroll = () => {
+                        const scrollLeft = questionsContainer.scrollLeft;
+                        const cardWidth = questionsContainer.offsetWidth;
+                        currentCardIndex = Math.round(scrollLeft / cardWidth);
+                        updateCardNavigation(questionCards);
+                    };
+                } else {
+                    cardNav.style.display = 'none'; // कोई प्रश्न नहीं है तो नेविगेशन छिपा दें
+                }
+            } else {
+                // अगर कार्ड मोड में नहीं हैं, तो लिस्नर हटा दें
+                questionsContainer.onscroll = null;
+            }
+            // --- END: CARD MODE NAVIGATION LOGIC ---
         }
         
         function updateQuestionUI(qId) {
