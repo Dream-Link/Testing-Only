@@ -769,10 +769,24 @@
             display: none !important;
         }
 
-        /* 2. जब कार्ड मोड सक्रिय हो, तो नेविगेशन दिखाएं */
-        #question-paper-page[data-view-mode="card-mode"] #card-navigation {
-            display: flex;
-        }
+      /* 2. जब कार्ड मोड सक्रिय हो, तो नेविगेशन दिखाएं */
+#question-paper-page[data-view-mode="card-mode"] #card-navigation {
+    /* लेआउट और पोजीशन */
+    display: flex;
+    position: fixed;  /* ⚡️ यह इसे स्क्रीन पर चिपका देगा */
+    bottom: 0;        /* ⚡️ यह इसे नीचे रखेगा */
+    left: 0;
+    width: 100%;
+    z-index: 1001;    /* यह इसे कंटेंट के ऊपर रखेगा */
+
+    /* स्टाइल (जो हमने HTML से हटाई थी) */
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem;
+    background-color: var(--surface-color);
+    border-top: 1px solid var(--border-color); /* ऊपर बॉर्डर */
+    box-shadow: 0 -2px 5px rgba(0,0,0,0.05); /* हल्की छाया */
+}
         #card-navigation button:disabled {
             background-color: var(--secondary-color);
             cursor: not-allowed;
@@ -797,7 +811,7 @@
             scroll-snap-type: x mandatory; /* यह इसे कार्ड की तरह स्नैप (चिपकने) में मदद करता है */
             -webkit-overflow-scrolling: touch; /* iOS पर स्मूथ स्क्रॉलिंग */
             scroll-behavior: smooth;
-            padding-bottom: 1rem;
+            padding-bottom: 6rem; /* ⚡️ नीचे अतिरिक्त जगह (लगभग 80px) */
             /* --- START: SCROLLBAR HIDE --- */
             scrollbar-width: none;  /* Firefox */
             -ms-overflow-style: none; /* IE and Edge */
@@ -837,10 +851,10 @@
             #question-paper-page[data-view-mode="card-mode"] .question-block {
                 height: calc(100vh - 220px); /* मोबाइल हेडर के हिसाब से ऊंचाई */
             }
-            #card-navigation {
-                padding: 0.5rem;
-                margin: 0 0.75rem 1rem 0.75rem;
-            }
+         #card-navigation {
+    padding: 0.5rem;
+    margin: 0; /* ⚡️ फिक्स्ड पोजीशन के लिए मार्जिन हटाया */
+}
             #card-navigation button {
                 padding: 0.5rem 0.8rem;
                 font-size: 0.9rem;
@@ -1217,7 +1231,7 @@
                 </div>
             </div>
             <div id="questions-container"></div>
-            <div id="card-navigation" style="display: none; justify-content: space-between; align-items: center; padding: 1rem; background-color: var(--surface-color); border: 1px solid var(--border-color); border-radius: var(--border-radius); margin: 0 1.5rem 1.5rem 1.5rem;">
+       <div id="card-navigation" style="display: none;">
                 <button id="prev-question-btn" style="background-color: var(--primary-color); color: white; border: none; padding: 0.6rem 1.2rem; border-radius: 0.375rem; cursor: pointer; font-weight: 600;"><i class="fas fa-arrow-left"></i> Previous</button>
                 <span id="card-counter" style="font-size: 1.1rem; font-weight: 600; color: var(--font-color);">1 / 100</span>
                 <button id="next-question-btn" style="background-color: var(--primary-color); color: white; border: none; padding: 0.6rem 1.2rem; border-radius: 0.375rem; cursor: pointer; font-weight: 600;">Next <i class="fas fa-arrow-right"></i></button>
