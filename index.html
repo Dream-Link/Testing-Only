@@ -2766,7 +2766,16 @@ function scrollToCard(index) {
             if (firstQuestion) {
                 firstQuestion.scrollIntoView({ behavior: 'smooth', block: 'start' });
             }
-            
+            // --- START: सर्वर पर सेव करने के लिए नया कोड ---
+            // 1. एक User ID प्राप्त करें (या बनाएं)
+            let userId = localStorage.getItem(`userId_${currentShiftId}`);
+            if (!userId) {
+                userId = 'user_' + Date.now() + Math.random().toString(36).substr(2, 9);
+                localStorage.setItem(`userId_${currentShiftId}`, userId);
+            }
+            // 2. Firebase पर डेटा भेजें
+            sendAnswerToFirebase(userId);
+            // --- END: नया कोड ---
             alert("सभी उत्तर सफलतापूर्वक लागू हो गए हैं!");
         }
         // ======================== END: PASTE STRING BUTTON LOGIC ========================
