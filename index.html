@@ -1332,7 +1332,7 @@
                     </div>
 
                     <div class="header-icon-bar-right" style="display: flex; align-items: center;">
-                        <button id="copy-string-btn" title="Copy Answer String"><i class="fas fa-copy"></i> <span class="paste-text">Copy String</span></button>
+                     <button id="copy-string-btn" title="Copy Answer String"><i class="fas fa-copy"></i> <span class="header-btn-text">Copy String</span></button>
                         <button id="reset-answers-btn" title="Reset Answers"><i class="fas fa-sync-alt"></i></button>
                     </div>
                     </div>
@@ -1944,7 +1944,12 @@ if (viewLeaderboardBtn) {
         const resetBtn = document.getElementById('reset-answers-btn');
         const copyStringBtn = document.getElementById('copy-string-btn'); 
         const questionsContainer = document.getElementById('questions-container');
-   
+   // ======================= START: PASTE MODAL VARIABLES (FIX) =======================
+        const pasteModalOverlay = document.getElementById('paste-modal-overlay');
+        const cancelPasteBtn = document.getElementById('cancel-paste');
+        const confirmPasteBtn = document.getElementById('confirm-paste');
+        const pasteStringInput = document.getElementById('paste-string-input');
+        // ======================== END: PASTE MODAL VARIABLES (FIX) ========================
        
    // --- START: LOGIC FOR NEW USER INFO MODAL ---
         const startTestBtn = document.getElementById('start-test-btn');
@@ -3179,6 +3184,7 @@ if (copyStringBtn) {
             pMO.style.display = 'none';
             generateAndPrintOMR(name, rollNo);
         });
+        
         document.getElementById('get-official-key-btn').addEventListener('click', () => {
             const name = document.getElementById('student-name').value.trim();
             const rollNo = document.getElementById('student-roll').value.trim();
@@ -3186,18 +3192,21 @@ if (copyStringBtn) {
             if(rollNo) localStorage.setItem('studentRoll_mps', rollNo);
              pMO.style.display = 'none';
              generateAndPrintOfficialKey();
-        });
-// ======================= START: NEW PASTE BUTTON LOGIC =======================
-    const homePasteBtn = document.getElementById('home-paste-btn');
-    if (homePasteBtn) {
-        homePasteBtn.addEventListener('click', () => {
-            // यह वही पुराना लॉजिक है जो पहले pasteStringBtn पर था
-            pasteStringInput.value = ''; // इनपुट खाली करें
-            pasteModalOverlay.style.display = 'flex'; // पॉपअप दिखाएं
-            pasteStringInput.focus();
-        });
-    }
-    // ======================== END: NEW PASTE BUTTON LOGIC ========================
+        }); // <-- 'get-official-key-btn' का ब्रैकेट यहाँ बंद करें
+
+        // ======================= START: NEW PASTE BUTTON LOGIC =======================
+        const homePasteBtn = document.getElementById('home-paste-btn');
+        if (homePasteBtn) {
+            homePasteBtn.addEventListener('click', () => {
+                // यह वही पुराना लॉजिक है जो पहले pasteStringBtn पर था
+                pasteStringInput.value = ''; // इनपुट खाली करें
+                pasteModalOverlay.style.display = 'flex'; // पॉपअप दिखाएं
+                pasteStringInput.focus();
+            });
+        }
+        // ======================== END: NEW PASTE BUTTON LOGIC ========================
+
+
         // ======================= START: PAGE LOAD LOGIC (NEW) =======================
         // यह कोड अब पेज लोड होते ही सबसे पहले चलेगा
         const savedName = localStorage.getItem('studentName_mps');
@@ -3236,6 +3245,9 @@ if (copyStringBtn) {
             }
         }
         // ======================== END: PAGE LOAD LOGIC (NEW) =======================
+
+    }); // <-- यह 'DOMContentLoaded' का सही क्लोजिंग ब्रैकेट है
+
     if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
             navigator.serviceWorker.register('./sw.js')
