@@ -306,6 +306,21 @@
         #get-official-key-btn { background-color: #6f42c1; color: white; }
 
         .print-only-container { display: none; }
+        #home-paste-btn {
+            transition: all 0.3s ease;
+            box-shadow: var(--shadow-md);
+        }
+        #home-paste-btn:hover {
+            background-color: var(--primary-dark);
+            box-shadow: 0 8px 15px rgba(0,0,0,0.1);
+            transform: translateY(-4px);
+        }
+        #home-paste-btn .icon {
+            transition: transform 0.3s ease;
+        }
+        #home-paste-btn:hover .icon {
+            transform: scale(1.1);
+        }
 
         @media (max-width: 768px) {
             .selector-container { max-width: 100%; } /* <-- MODIFIED: Allow full width on mobile */
@@ -1167,10 +1182,16 @@
         <div id="official-key-print-container"></div>
     </div>
 
-    <div id="shift-selector-page">
+   <div id="shift-selector-page">
         <div class="selector-container">
             <h2>चतुर्थ श्रेणी कर्मचारी</h2>
                <p style="text-align:center; color: red;"> Official Answer Key Updated</p>
+            
+            <button id="home-paste-btn" class="shift-btn" style="background-color: var(--primary-color); border: none; color: white; display: flex; justify-content: center; text-align: center; margin-bottom: 1rem; padding: 1rem 1.25rem;">
+                <div class="icon" style="background-color: rgba(255,255,255,0.2); color: white;"><i class="fas fa-paste"></i></div>
+                <div class="text" style="color: white; font-size: 1.2rem;">Paste Answer String</div>
+            </button>
+            <p style="margin: -0.5rem 0 1.5rem 0; font-weight: 600; color: var(--font-color-light);">- OR -</p>
             <p class="subtitle">कृपया अपनी शिफ़्ट चुनें।</p>
             <div class="shift-selector">
                 <a class="shift-btn" data-shift="shift1"><div class="icon"><i class="fas fa-file-alt"></i></div><div class="text">1st Shift 19.09.2025</div></a>
@@ -1311,7 +1332,6 @@
                     </div>
 
                     <div class="header-icon-bar-right" style="display: flex; align-items: center;">
-                        <button id="paste-string-btn" title="Paste Answer String"><i class="fas fa-paste"></i> <span class="paste-text">Paste String</span></button>
                         <button id="copy-string-btn" title="Copy Answer String"><i class="fas fa-copy"></i> <span class="paste-text">Copy String</span></button>
                         <button id="reset-answers-btn" title="Reset Answers"><i class="fas fa-sync-alt"></i></button>
                     </div>
@@ -1925,14 +1945,7 @@ if (viewLeaderboardBtn) {
         const copyStringBtn = document.getElementById('copy-string-btn'); 
         const questionsContainer = document.getElementById('questions-container');
    
-        // ======================= START: PASTE MODAL VARIABLES =======================
-        const pasteStringBtn = document.getElementById('paste-string-btn');
-        const pasteModalOverlay = document.getElementById('paste-modal-overlay');
-        const cancelPasteBtn = document.getElementById('cancel-paste');
-        const confirmPasteBtn = document.getElementById('confirm-paste');
-        const pasteStringInput = document.getElementById('paste-string-input');
-        // ======================== END: PASTE MODAL VARIABLES ========================
-
+       
    // --- START: LOGIC FOR NEW USER INFO MODAL ---
         const startTestBtn = document.getElementById('start-test-btn');
         if (startTestBtn) {
@@ -1960,7 +1973,18 @@ if (viewLeaderboardBtn) {
                 localStorage.setItem('studentSpecial_mps', specialSelect.value); // यह खाली भी हो सकता है
 
                 // अब पेपर लोड करने के लिए आगे बढ़ें
-            proceedToLoadPaper(currentShiftId, true, null);
+         // अब पॉपअप छिपाएं और शिफ्ट पेज दिखाएं
+                document.getElementById('user-info-modal-overlay').style.display = 'none';
+                document.getElementById('shift-selector-page').style.display = 'flex';
+                
+                // पेज दिखाने के बाद URL को हैंडल करें
+                const shiftIdFromUrl = window.location.hash.substring(1);
+                if (shiftIdFromUrl && allShiftData[shiftIdFromUrl]) {
+                    loadShift(shiftIdFromUrl);
+                } else {
+                    history.pushState({page: 'home'}, 'Home', window.location.pathname);
+                    window.location.hash = '';
+                }
             });
         }
         // --- END: LOGIC FOR NEW USER INFO MODAL ---
@@ -1988,33 +2012,10 @@ if (viewLeaderboardBtn) {
         }));
 
         // ======================= START: MODIFIED loadShift LOGIC =======================
-      function loadShift(shiftId, shouldPushState = true, stringToParse = null) {
+     function loadShift(shiftId, shouldPushState = true, stringToParse = null) {
             currentShiftId = shiftId; 
-
-            // localStorage से सभी ज़रूरी जानकारी की जाँच करें
-            const savedName = localStorage.getItem('studentName_mps');
-            const savedRoll = localStorage.getItem('studentRoll_mps');
-            const savedGender = localStorage.getItem('studentGender_mps');
-            const savedArea = localStorage.getItem('studentArea_mps');
-            const savedCategory = localStorage.getItem('studentCategory_mps');
-
-            // अगर कोई भी ज़रूरी जानकारी मौजूद नहीं है, तो पॉपअप दिखाएं
-            if (!savedName || !savedRoll || !savedGender || !savedArea || !savedCategory) {
-                // पॉपअप के फील्ड्स में पुरानी जानकारी (अगर कोई है) भरें
-                document.getElementById('initial-student-name').value = savedName || '';
-                document.getElementById('initial-student-roll').value = savedRoll || '';
-                document.getElementById('initial-student-gender').value = savedGender || '';
-                document.getElementById('initial-student-area').value = savedArea || '';
-                document.getElementById('initial-student-category').value = savedCategory || '';
-                document.getElementById('initial-student-special').value = localStorage.getItem('studentSpecial_mps') || '';
-
-                // पॉपअप दिखाएं
-                document.getElementById('user-info-modal-overlay').style.display = 'flex';
-            } else {
-                // अगर सभी जानकारी मौजूद है, तो सीधे पेपर लोड करें
-             proceedToLoadPaper(shiftId, shouldPushState, stringToParse);
-            }
-        }
+            proceedToLoadPaper(shiftId, shouldPushState, stringToParse);
+           }
      function proceedToLoadPaper(shiftId, shouldPushState = true, stringToParse = null) {
             document.getElementById('user-info-modal-overlay').style.display = 'none';
             shiftSelectorPage.style.display = 'none';
@@ -2597,19 +2598,7 @@ function scrollToCard(index) {
         
 // ======================= START: COPY STRING BUTTON LOGIC =======================
         // ======================= START: PASTE STRING BUTTON LOGIC =======================
-        if (pasteStringBtn) {
-            pasteStringBtn.addEventListener('click', () => {
-                // पॉपअप खोलने से पहले सुनिश्चित करें कि एक शिफ्ट लोड है
-                if (!currentShiftId) {
-                    alert("कृपया पहले एक शिफ्ट चुनें।");
-                    return;
-                }
-                pasteStringInput.value = ''; // इनपुट खाली करें
-                pasteModalOverlay.style.display = 'flex'; // पॉपअप दिखाएं
-                pasteStringInput.focus();
-            });
-        }
-
+       
         if (cancelPasteBtn) {
             cancelPasteBtn.addEventListener('click', () => {
                 pasteModalOverlay.style.display = 'none'; // पॉपअप छिपाएं
@@ -3206,7 +3195,57 @@ if (copyStringBtn) {
             showHomePage();
         }
     }); 
+// ======================= START: NEW PASTE BUTTON LOGIC =======================
+        const homePasteBtn = document.getElementById('home-paste-btn');
+        if (homePasteBtn) {
+            homePasteBtn.addEventListener('click', () => {
+                // यह वही पुराना लॉजिक है जो पहले pasteStringBtn पर था
+                pasteStringInput.value = ''; // इनपुट खाली करें
+                pasteModalOverlay.style.display = 'flex'; // पॉपअप दिखाएं
+                pasteStringInput.focus();
+            });
+        }
+        // ======================== END: NEW PASTE BUTTON LOGIC ========================
 
+
+        // ======================= START: PAGE LOAD LOGIC (NEW) =======================
+        // यह कोड अब पेज लोड होते ही सबसे पहले चलेगा
+        const savedName = localStorage.getItem('studentName_mps');
+        const savedRoll = localStorage.getItem('studentRoll_mps');
+        const savedGender = localStorage.getItem('studentGender_mps');
+        const savedArea = localStorage.getItem('studentArea_mps');
+        const savedCategory = localStorage.getItem('studentCategory_mps');
+        const userInfoModal = document.getElementById('user-info-modal-overlay');
+        const shiftSelectorPage = document.getElementById('shift-selector-page');
+
+        if (!savedName || !savedRoll || !savedGender || !savedArea || !savedCategory) {
+            // जानकारी नहीं मिली: पॉपअप दिखाएं, शिफ्ट पेज छिपाएं
+            shiftSelectorPage.style.display = 'none'; 
+            
+            // पॉपअप में पुरानी (अगर कोई है) जानकारी भरें
+            document.getElementById('initial-student-name').value = savedName || '';
+            document.getElementById('initial-student-roll').value = savedRoll || '';
+            document.getElementById('initial-student-gender').value = savedGender || '';
+            document.getElementById('initial-student-area').value = savedArea || '';
+            document.getElementById('initial-student-category').value = savedCategory || '';
+            document.getElementById('initial-student-special').value = localStorage.getItem('studentSpecial_mps') || '';
+            
+            userInfoModal.style.display = 'flex';
+        } else {
+            // जानकारी मिल गई: पॉपअप छिपाएं, शिफ्ट पेज दिखाएं
+            userInfoModal.style.display = 'none';
+            shiftSelectorPage.style.display = 'flex';
+
+            // और URL को हैंडल करें (जैसे पेज रीलोड करने पर)
+            const shiftIdFromUrl = window.location.hash.substring(1);
+            if (shiftIdFromUrl && allShiftData[shiftIdFromUrl]) {
+                loadShift(shiftIdFromUrl);
+            } else {
+                history.pushState({page: 'home'}, 'Home', window.location.pathname);
+                window.location.hash = '';
+            }
+        }
+        // ======================== END: PAGE LOAD LOGIC (NEW) =======================
     if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
             navigator.serviceWorker.register('./sw.js')
