@@ -106,9 +106,8 @@
     text-decoration: none; cursor: pointer;
     text-align: left; box-shadow: var(--shadow-sm);
     transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s;
-    position: relative; /* <-- यह लाइन जोड़ें */
-    overflow: hidden;   /* <-- और यह लाइन जोड़ें */
-}
+    position: relative; 
+    overflow: hidden;  
         }
         .shift-btn:hover { transform: translateY(-5px); box-shadow: var(--shadow-md); }
         .shift-btn .icon {
@@ -3192,7 +3191,7 @@ if (copyStringBtn) {
             if(rollNo) localStorage.setItem('studentRoll_mps', rollNo);
              pMO.style.display = 'none';
              generateAndPrintOfficialKey();
-        }); // <-- 'get-official-key-btn' का ब्रैकेट यहाँ बंद करें
+        });
 
         // ======================= START: NEW PASTE BUTTON LOGIC =======================
         const homePasteBtn = document.getElementById('home-paste-btn');
