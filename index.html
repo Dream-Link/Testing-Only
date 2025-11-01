@@ -2643,6 +2643,13 @@ function scrollToCard(index) {
 
             const parsedShiftId = match[1].toLowerCase();
             const parsedSeriesFormat = match[2]; // जैसे "set01" या "MASTER"
+            // --- START: FIX ---
+            // स्ट्रिंग के "shift02" को डेटा के "shift2" में बदलें
+            const shiftNumMatch = parsedShiftId.match(/shift(\d{2})/);
+            if (shiftNumMatch) {
+                const shiftNum = parseInt(shiftNumMatch[1], 10); // "02" से नंबर 2 बनेगा
+                parsedShiftId = `shift${shiftNum}`; // 2 से "shift2" बन जाएगा
+            }
             const answersString = match[3];
 
             // 1. शिफ्ट जांचें और लोड करें
