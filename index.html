@@ -1091,7 +1091,7 @@
             #shift-title {
                 font-size: 0.9rem; /* मोबाइल पर और छोटा टाइटल */
             }
-            .header-controls select, .header-controls button {
+           .header-controls select, .header-controls button {
                 font-size: 0.7rem; /* मोबाइल पर और छोटा फ़ॉन्ट */
             }
         }
@@ -1309,10 +1309,13 @@
                         </div>
                         <button id="jump-to-q-btn" title="Jump to Question"><i class="fas fa-th-large"></i></button>
                     </div>
-                    <button id="copy-string-btn" title="Copy Answer String"><i class="fas fa-copy"></i><span class="paste-text">Copy String</span></button>
-                    <button id="paste-string-btn" title="Paste Answer String"><i class="fas fa-paste"></i> <span class="paste-text">Paste String</span></button>
-                    <button id="reset-answers-btn" title="Reset Answers"><i class="fas fa-sync-alt"></i></button>
-                </div>
+
+                    <div class="header-icon-bar-right" style="display: flex; align-items: center;">
+                        <button id="paste-string-btn" title="Paste Answer String"><i class="fas fa-paste"></i> <span class="paste-text">Paste String</span></button>
+                        <button id="copy-string-btn" title="Copy Answer String"><i class="fas fa-copy"></i> <span class="paste-text">Copy String</span></button>
+                        <button id="reset-answers-btn" title="Reset Answers"><i class="fas fa-sync-alt"></i></button>
+                    </div>
+                    </div>
 
                 <h1 id="shift-title">Shift Title</h1> 
                 
@@ -1441,9 +1444,9 @@
             <h3 id="jump-modal-title">Jump to Question</h3>
             <div id="jump-grid-container">
                 </div>
-            <button id="close-jump-modal-btn">Close</button>
+           <button id="close-jump-modal-btn">Close</button>
         </div>
-        <div id="paste-modal-overlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.6); z-index: 3000; align-items: center; justify-content: center; padding: 1rem; opacity: 1; transition: opacity 0.2s ease;">
+    </div> <div id="paste-modal-overlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.6); z-index: 3000; align-items: center; justify-content: center; padding: 1rem; opacity: 1; transition: opacity 0.2s ease;">
         <div id="paste-modal" style="background-color: var(--surface-color); color: var(--font-color); border-radius: var(--border-radius); box-shadow: var(--shadow-md); width: 100%; max-width: 500px; padding: 1.5rem;">
             <h3 style="margin: 0 0 0.5rem 0; text-align: center; font-size: 1.2rem;">Paste Answer String</h3>
             <p style="font-size: 0.9rem; color: var(--font-color-light); text-align: center; margin: 0 0 1rem 0;">पूरी स्ट्रिंग (जैसे Fourth:shift01...) यहाँ पेस्ट करें।</p>
@@ -1455,11 +1458,10 @@
         </div>
     </div>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
-    </div>
-    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
-    <script src="questions-data.js"></script>
    <script>
+
+       
     // START: FIREBASE CONFIG (ADDED)
     const firebaseConfig = {
   apiKey: "AIzaSyBfL_owhzOEZPvCCAeuT55axrIQxsf1gqQ",
