@@ -1960,7 +1960,7 @@ if (viewLeaderboardBtn) {
                 localStorage.setItem('studentSpecial_mps', specialSelect.value); // यह खाली भी हो सकता है
 
                 // अब पेपर लोड करने के लिए आगे बढ़ें
-             proceedToLoadPaper(currentShiftId, true, stringToParse);
+            proceedToLoadPaper(currentShiftId, true, null);
             });
         }
         // --- END: LOGIC FOR NEW USER INFO MODAL ---
@@ -2012,7 +2012,7 @@ if (viewLeaderboardBtn) {
                 document.getElementById('user-info-modal-overlay').style.display = 'flex';
             } else {
                 // अगर सभी जानकारी मौजूद है, तो सीधे पेपर लोड करें
-                proceedToLoadPaper(shiftId, shouldPushState);
+             proceedToLoadPaper(shiftId, shouldPushState, stringToParse);
             }
         }
      function proceedToLoadPaper(shiftId, shouldPushState = true, stringToParse = null) {
@@ -2055,7 +2055,15 @@ if (viewLeaderboardBtn) {
         questionPaperPage.dataset.viewMode = savedViewMode;
         updateViewModeButton(savedViewMode);
         // --- END: NEW VIEW MODE LOGIC ---
-            displayQuestions(currentSeries, activeFilter);
+          displayQuestions(currentSeries, activeFilter);
+
+            // --- START: PASTE LOGIC TRIGGER ---
+            // अगर loadShift से कोई स्ट्रिंग आई है, तो अब उसे पार्स करें
+            // 'true' फ्लैग यह सुनिश्चित करता है कि हम शिफ्ट-चेक को दोबारा न चलाएं
+            if (stringToParse) {
+                parseAndApplyString(stringToParse, true);
+            }
+            // --- END: PASTE LOGIC TRIGGER ---
         }
         // ======================= END: MODIFIED loadShift LOGIC =======================
 
@@ -2646,8 +2654,9 @@ function scrollToCard(index) {
                 return;
             }
 
-            const parsedShiftId = match[1].toLowerCase();
+           let parsedShiftId = match[1].toLowerCase(); // यह "shift02" होगा
             const parsedSeriesFormat = match[2]; // जैसे "set01" या "MASTER"
+
             // --- START: FIX ---
             // स्ट्रिंग के "shift02" को डेटा के "shift2" में बदलें
             const shiftNumMatch = parsedShiftId.match(/shift(\d{2})/);
@@ -2655,6 +2664,7 @@ function scrollToCard(index) {
                 const shiftNum = parseInt(shiftNumMatch[1], 10); // "02" से नंबर 2 बनेगा
                 parsedShiftId = `shift${shiftNum}`; // 2 से "shift2" बन जाएगा
             }
+            // --- END: FIX ---
             const answersString = match[3];
 // 1. शिफ्ट जांचें और लोड करें
             if (!skipShiftCheck) { // इस नई 'if' कंडीशन को जोड़ें
@@ -2671,6 +2681,7 @@ function scrollToCard(index) {
                     alert("स्ट्रिंग में अमान्य शिफ्ट आईडी।");
                     return;
                 }
+              }
             }
             
             // 2. सीरीज (सेट) ढूंढें और चुनें
@@ -2884,16 +2895,10 @@ if (copyStringBtn) {
     });
 }
 // ======================== END: COPY STRING BUTTON LOGIC ========================
-        document.querySelectorAll('.filter-buttons button').forEach(b => b.addEventListener('click', () => {
+       document.querySelectorAll('.filter-buttons button').forEach(b => b.addEventListener('click', () => {
             activeFilter = b.dataset.filter;
             displayQuestions(currentSeries, activeFilter);
-            // --- START: PASTE LOGIC TRIGGER ---
-        // अगर loadShift से कोई स्ट्रिंग आई है, तो अब उसे पार्स करें
-        // 'true' फ्लैग यह सुनिश्चित करता है कि हम शिफ्ट-चेक को दोबारा न चलाएं
-        if (stringToParse) {
-            parseAndApplyString(stringToParse, true);
         }));
-
         document.getElementById('toggle-summary-btn').addEventListener('click', (e) => {
             const sB = document.querySelector('.summary-bar');
             sB.classList.toggle('hidden');
