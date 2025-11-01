@@ -1187,7 +1187,7 @@
             <h2>चतुर्थ श्रेणी कर्मचारी</h2>
                <p style="text-align:center; color: red;"> Official Answer Key Updated</p>
             
-            <button id="home-paste-btn" class="shift-btn" style="background-color: var(--primary-color); border: none; color: white; display: flex; justify-content: center; text-align: center; margin-bottom: 1rem; padding: 1rem 1.25rem;">
+           <button id="home-paste-btn" class="shift-btn" style="background-color: var(--primary-color); border: none; color: white; display: inline-flex; justify-content: center; text-align: center; margin-bottom: 1rem; padding: 1rem 1.25rem;">
                 <div class="icon" style="background-color: rgba(255,255,255,0.2); color: white;"><i class="fas fa-paste"></i></div>
                 <div class="text" style="color: white; font-size: 1.2rem;">Paste Answer String</div>
             </button>
@@ -3187,27 +3187,17 @@ if (copyStringBtn) {
              pMO.style.display = 'none';
              generateAndPrintOfficialKey();
         });
-
-        const shiftIdFromUrl = window.location.hash.substring(1);
-        if (shiftIdFromUrl && allShiftData[shiftIdFromUrl]) {
-            loadShift(shiftIdFromUrl);
-        } else {
-            showHomePage();
-        }
-    }); 
 // ======================= START: NEW PASTE BUTTON LOGIC =======================
-        const homePasteBtn = document.getElementById('home-paste-btn');
-        if (homePasteBtn) {
-            homePasteBtn.addEventListener('click', () => {
-                // यह वही पुराना लॉजिक है जो पहले pasteStringBtn पर था
-                pasteStringInput.value = ''; // इनपुट खाली करें
-                pasteModalOverlay.style.display = 'flex'; // पॉपअप दिखाएं
-                pasteStringInput.focus();
-            });
-        }
-        // ======================== END: NEW PASTE BUTTON LOGIC ========================
-
-
+    const homePasteBtn = document.getElementById('home-paste-btn');
+    if (homePasteBtn) {
+        homePasteBtn.addEventListener('click', () => {
+            // यह वही पुराना लॉजिक है जो पहले pasteStringBtn पर था
+            pasteStringInput.value = ''; // इनपुट खाली करें
+            pasteModalOverlay.style.display = 'flex'; // पॉपअप दिखाएं
+            pasteStringInput.focus();
+        });
+    }
+    // ======================== END: NEW PASTE BUTTON LOGIC ========================
         // ======================= START: PAGE LOAD LOGIC (NEW) =======================
         // यह कोड अब पेज लोड होते ही सबसे पहले चलेगा
         const savedName = localStorage.getItem('studentName_mps');
