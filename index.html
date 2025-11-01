@@ -1061,13 +1061,13 @@
         /* 5. सभी आइकन्स और बटन्स को छोटा करें */
 
         /* पंक्ति 1 के आइकन */
-        #view-mode-btn, #jump-to-q-btn, #reset-answers-btn {
+        #view-mode-btn, #jump-to-q-btn, #copy-string-btn, #reset-answers-btn {
             font-size: 0.8rem; /* छोटा फ़ॉन्ट */
             padding: 0.2rem 0.4rem; /* छोटी पैडिंग */
             margin: 0; /* फालतू मार्जिन हटाया */
         }
         /* आइकन का साइज़ */
-        #view-mode-btn i, #jump-to-q-btn i, #reset-answers-btn i {
+   #view-mode-btn i, #jump-to-q-btn i, #copy-string-btn i, #reset-answers-btn i {
              font-size: 1.0rem;
         }
         /* व्यू मोड बटन से टेक्स्ट "With Option" छिपा दें */
@@ -1309,6 +1309,7 @@
                         </div>
                         <button id="jump-to-q-btn" title="Jump to Question"><i class="fas fa-th-large"></i></button>
                     </div>
+                    <button id="copy-string-btn" title="Copy Answer String"><i class="fas fa-copy"></i></button>
                     <button id="reset-answers-btn" title="Reset Answers"><i class="fas fa-sync-alt"></i></button>
                 </div>
 
@@ -1903,7 +1904,9 @@ if (viewLeaderboardBtn) {
         const printBtn = document.getElementById('header-print-btn');
         const pMO = document.getElementById('print-modal-overlay');
         const toggleInfoBtn = document.getElementById('toggle-info-bar-btn');
+      
         const resetBtn = document.getElementById('reset-answers-btn');
+        const copyStringBtn = document.getElementById('copy-string-btn'); 
         const questionsContainer = document.getElementById('questions-container');
 
    // --- START: LOGIC FOR NEW USER INFO MODAL ---
@@ -2530,7 +2533,129 @@ function scrollToCard(index) {
                 displayQuestions(currentSeries, 'all');
             }
         });
+        
+// ======================= START: COPY STRING BUTTON LOGIC =======================
+if (copyStringBtn) {
+    copyStringBtn.addEventListener('click', () => {
+        // 1. जांचें कि शिफ्ट लोड है या नहीं
+        if (!currentShiftId || !currentShiftData) {
+            alert("कृपया पहले एक शिफ्ट लोड करें।");
+            return;
+        }
+        
+        try {
+            // 2. उत्तरों की स्ट्रिंग बनाएं
+            const answerStrings = [];
+            const seriesOrder = currentShiftData.seriesOrder[currentSeries] || Array.from({length: allQuestions.length}, (_, i) => i + 1);
+            const optionLabels = ['A', 'B', 'C', 'D', 'E'];
 
+            seriesOrder.forEach((qIndex, i) => {
+                const displayNum = i + 1;
+                const qData = allQuestions[qIndex - 1];
+                if (!qData) return;
+
+                const qId = qData.id;
+                const selectedAnswerText = userAnswers[qId]; // उपयोगकर्ता का चुना गया उत्तर (raw text)
+
+                if (!selectedAnswerText) {
+                    // यदि कोई उत्तर नहीं चुना गया है
+                    answerStrings.push(`${displayNum}. NC`);
+                } else {
+                    // यदि उत्तर चुना गया है, तो उसका लेबल (A, B, C...) ढूंढें
+                    const optionTexts = qData.options.map(opt => opt.substring(3));
+                    let shuffledOptionTexts;
+                    const seriesOptionConfig = currentShiftData.seriesOptionOrder?.[currentSeries];
+
+                    // विकल्पों को शफल (shuffle) करने का वही लॉजिक जो प्रश्न दिखाते समय इस्तेमाल होता है
+                    if (Array.isArray(seriesOptionConfig)) {
+                        shuffledOptionTexts = seriesOptionConfig.map(index => optionTexts[index]);
+                    } else if (typeof seriesOptionConfig === 'object' && seriesOptionConfig !== null) {
+                        const specificOrder = seriesOptionConfig[qData.id];
+                        const defaultOrder = seriesOptionConfig['default'];
+                        const orderToUse = specificOrder || defaultOrder;
+                        shuffledOptionTexts = orderToUse ? orderToUse.map(index => optionTexts[index]) : [...optionTexts];
+                    } else {
+                        shuffledOptionTexts = [...optionTexts];
+                    }
+
+                    // चुने गए उत्तर का इंडेक्स (0-4) ढूंढें
+                    const selectedIndex = shuffledOptionTexts.findIndex(text => text.trim() === selectedAnswerText.trim());
+
+                    if (selectedIndex !== -1) {
+                        // अगर इंडेक्स मिल गया (A, B, C, D, या E)
+                        const selectedLabel = optionLabels[selectedIndex];
+                        answerStrings.push(`${displayNum}. ${selectedLabel}`);
+                    } else {
+                        // यदि कोई गड़बड़ है (हालांकि 'E' को भी मिल जाना चाहिए)
+                        answerStrings.push(`${displayNum}. NC`);
+                    }
+                }
+            });
+
+            const answersPart = answerStrings.join(' ');
+
+            // 3. फाइनल स्ट्रिंग बनाएं
+            const prefix = 'Fourth';
+            const shiftNum = currentShiftId.replace('shift', '');
+            const formattedShift = `shift${shiftNum.padStart(2, '0')}`;
+            
+            // --- YAHAN BADLAV KIYA GAYA HAI (REQUEST KE ANUSAAR) ---
+            
+            const seriesVal = currentSeries; // यह ड्रॉपडाउन से चुनी गई वैल्यू है (जैसे "A22Z Set 1")
+            let formattedSeries;
+
+            if (seriesVal === 'MASTER') {
+                formattedSeries = 'MASTER';
+            } else {
+                // स्ट्रिंग में मौजूद *सभी* नंबरों को ढूंढें (जैसे "A22Z Set 1" में से ["22", "1"])
+                const allNumbers = seriesVal.match(/\d+/g); 
+
+                if (allNumbers && allNumbers.length > 0) {
+                    // *आखिरी* नंबर को सेट नंबर मानें (जैसे ["22", "1"] में से "1")
+                    const setNum = allNumbers[allNumbers.length - 1]; 
+                    formattedSeries = `set${setNum.padStart(2, '0')}`; // "set01" बन जाएगा
+                } else {
+                    // अगर कोई नंबर नहीं मिला (जैसे "Series A")
+                    formattedSeries = seriesVal; // तो जैसा है वैसा ही इस्तेमाल करें
+                }
+            }
+            
+            // Final string (बिना ब्रैकेट्स के)
+            const finalString = `${prefix}:${formattedShift}:${formattedSeries}: ${answersPart}`;
+            
+            // --- BADLAV KHATM ---
+
+            // 4. क्लिपबोर्ड पर कॉपी करें
+            if (navigator.clipboard) {
+                navigator.clipboard.writeText(finalString).then(() => {
+                    // कॉपी होने पर फीडबैक दें
+                    const icon = copyStringBtn.querySelector('i');
+                    if(icon) icon.className = 'fas fa-check'; // आइकन को 'चेक' में बदलें
+                    setTimeout(() => {
+                        if(icon) icon.className = 'fas fa-copy'; // 2 सेकंड बाद वापस 'कॉपी' आइकन
+                    }, 2000);
+                }).catch(err => {
+                    console.error('Failed to copy: ', err);
+                    alert("स्ट्रिंग कॉपी करने में विफल।");
+                });
+            } else {
+                // पुराने ब्राउज़र के लिए फॉलबैक
+                const textArea = document.createElement('textarea');
+                textArea.value = finalString;
+                document.body.appendChild(textArea);
+                textArea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textArea);
+                alert("स्ट्रिंग क्लिपबोर्ड पर कॉपी की गई।");
+            }
+
+        } catch (error) {
+            console.error("कॉपी स्ट्रिंग बनाने में त्रुटि:", error);
+            alert("स्ट्रिंग बनाते समय एक त्रुटि हुई।");
+        }
+    });
+}
+// ======================== END: COPY STRING BUTTON LOGIC ========================
         document.querySelectorAll('.filter-buttons button').forEach(b => b.addEventListener('click', () => {
             activeFilter = b.dataset.filter;
             displayQuestions(currentSeries, activeFilter);
