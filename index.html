@@ -3,7 +3,7 @@
 <head> 
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>4th Grade Paper Analysis by MP SALODIYA</title>
+    <title>VDO Paper Analysis by MP SALODIYA</title>
 
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#0d6efd">
@@ -615,31 +615,7 @@
             border: 1px solid var(--primary-color);
         }
         /* ======================== END: LEADERBOARD USER HIGHLIGHT ========================= */
-        /* ======================== START: SHIFT BUTTON BORDER ANIMATION ========================= */
-.shift-btn::before {
-    content: '';
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    width: 150%; /* बॉक्स से बड़ा ताकि घूम सके */
-    height: 300%; /* बॉक्स से बड़ा ताकि घूम सके */
-    z-index: -1; /* बटन के टेक्स्ट के पीछे रखने के लिए */
-    background: conic-gradient(
-        var(--primary-color) 20deg, 
-        transparent 120deg
-    );
-    animation: rotate-border 4s linear infinite;
-}
-
-@keyframes rotate-border {
-    0% {
-        transform: translate(-50%, -50%) rotate(0deg);
-    }
-    100% {
-        transform: translate(-50%, -50%) rotate(360deg);
-    }
-}
-/* ======================== END: SHIFT BUTTON BORDER ANIMATION ========================= */
+       
         /* ======================= START: NEW VIEW MODE CSS ======================= */
 
     /* 1. Wrapper for the new dropdown */
@@ -1183,51 +1159,37 @@
 
    <div id="shift-selector-page">
         <div class="selector-container">
-            <h2>चतुर्थ श्रेणी कर्मचारी</h2>
+            <h2>VDO (ग्राम विकास अधिकारी)</h2>
                <p style="text-align:center; color: red;"> Official Answer Key Updated</p>
             
            <button id="home-paste-btn" class="shift-btn" style="background-color: var(--primary-color); border: none; color: white; display: inline-flex; justify-content: center; text-align: center; margin-bottom: 1rem; padding: 1rem 1.25rem;">
                 <div class="icon" style="background-color: rgba(255,255,255,0.2); color: white;"><i class="fas fa-paste"></i></div>
                 <div class="text" style="color: white; font-size: 1.2rem;">Paste Answer String</div>
             </button>
+         
             <p style="margin: -0.5rem 0 1.5rem 0; font-weight: 600; color: var(--font-color-light);">- OR -</p>
-            <p class="subtitle">कृपया अपनी शिफ़्ट चुनें।</p>
-            <div class="shift-selector">
-                <a class="shift-btn" data-shift="shift1"><div class="icon"><i class="fas fa-file-alt"></i></div><div class="text">1st Shift 19.09.2025</div></a>
-                <a class="shift-btn" data-shift="shift2"><div class="icon"><i class="fas fa-file-alt"></i></div><div class="text">2nd Shift 19.09.2025</div></a>
-                <a class="shift-btn" data-shift="shift3"><div class="icon"><i class="fas fa-file-alt"></i></div><div class="text">3rd Shift 20.09.2025</div></a>
-                <a class="shift-btn" data-shift="shift4"><div class="icon"><i class="fas fa-file-alt"></i></div><div class="text">4th Shift 20.09.2025</div></a>
-                <a class="shift-btn" data-shift="shift5"><div class="icon"><i class="fas fa-file-alt"></i></div><div class="text">5th Shift 21.09.2025</div></a>
-                <a class="shift-btn" data-shift="shift6"><div class="icon"><i class="fas fa-file-alt"></i></div><div class="text">6th Shift 21.09.2025</div></a>
+            
+            <div style="display: flex; justify-content: center; padding: 0 1.5rem;">
+                <a class="shift-btn" data-shift="shift1" style="max-width: 450px; flex-grow: 1; justify-content: center;">
+                    <div class="icon"><i class="fas fa-file-alt"></i></div>
+                    <div class="text">Start Exam Analysis</div>
+                </a>
             </div>
+
             <div class="selector-footer">
-              
-             
+
                 <p>
                     <a href="https://t.me/Dreamlinkmp" target="_blank" class="creator-link" style="color: blue; text-decoration: underline;">Join Telegram Group</a>
                 </p>
             </div>
             <div id="leaderboard-section" style="margin-top: 3rem; width: 100%; text-align: left;">
                 
-                <h4 style="font-size: 1.2rem; font-weight: 700; color: var(--primary-dark); margin-top: 0; margin-bottom: 1.5rem; padding-bottom: 0.75rem; border-bottom: 1px solid var(--border-color);">लीडरबोर्ड</h4>
+                <h4 style="font-size: 1.2rem; font-weight: 700; color: var(--primary-dark); margin-top: 0; margin-bottom: 1.5rem; padding-bottom: 0.75rem; border-bottom: 1px solid var(--border-color);">Leaderboard</h4>
 
-         <div class="leaderboard-controls" style="margin-bottom: 1.5rem; display: flex; gap: 0.5rem; align-items: end; flex-wrap: nowrap;">
+        <div class="leaderboard-controls" style="margin-bottom: 1.5rem; display: flex; gap: 0.5rem; align-items: end; flex-wrap: nowrap;">
                     
                     <div style="flex-grow: 1; flex-basis: 0; min-width: 0;">
-                        <label for="leaderboard-shift-filter" style="font-weight: 500; font-size: 0.875rem; display: block; margin-bottom: 0.25rem;">शिफ़्ट:</label>
-                        <select id="leaderboard-shift-filter" style="width: 100%; padding: 0.5rem; border-radius: 0.375rem; border: 1px solid var(--border-color);">
-                            <option value="all">All</option>
-                            <option value="shift1">1st Shift</option>
-                            <option value="shift2">2nd Shift</option>
-                            <option value="shift3">3rd Shift</option>
-                            <option value="shift4">4th Shift</option>
-                            <option value="shift5">5th Shift</option>
-                            <option value="shift6">6th Shift</option>
-                        </select>
-                    </div>
-
-                    <div style="flex-grow: 1; flex-basis: 0; min-width: 0;">
-                        <label for="leaderboard-category-filter" style="font-weight: 500; font-size: 0.875rem; display: block; margin-bottom: 0.25rem;">कैटेगरी:</label>
+                        <label for="leaderboard-category-filter" style="font-weight: 500; font-size: 0.875rem; display: block; margin-bottom: 0.25rem;">Category:</label>
                         <select id="leaderboard-category-filter" style="width: 100%; padding: 0.5rem; border-radius: 0.375rem; border: 1px solid var(--border-color);">
                             <option value="all">All</option>
                             <option value="GEN">GEN</option>
@@ -1241,7 +1203,7 @@
                     </div>
 
                     <div style="flex-grow: 1; flex-basis: 0; min-width: 0;">
-                        <label for="leaderboard-area-filter" style="font-weight: 500; font-size: 0.875rem; display: block; margin-bottom: 0.25rem;">एरिया:</label>
+                        <label for="leaderboard-area-filter" style="font-weight: 500; font-size: 0.875rem; display: block; margin-bottom: 0.25rem;">Area</label>
                         <select id="leaderboard-area-filter" style="width: 100%; padding: 0.5rem; border-radius: 0.375rem; border: 1px solid var(--border-color);">
                             <option value="all">All</option>
                             <option value="NTSP">Non-TSP</option>
@@ -1483,13 +1445,13 @@
 
        
     // START: FIREBASE CONFIG (ADDED)
-    const firebaseConfig = {
-  apiKey: "AIzaSyBfL_owhzOEZPvCCAeuT55axrIQxsf1gqQ",
-  authDomain: "th-grade-official.firebaseapp.com",
-  projectId: "th-grade-official",
-  storageBucket: "th-grade-official.firebasestorage.app",
-  messagingSenderId: "327380792213",
-  appId: "1:327380792213:web:7c9f5f383993f885cfbc9c"
+   const firebaseConfig = {
+  apiKey: "AIzaSyDetPWhOJbERy0LFDnI6IpFz7UshUArc6o",
+  authDomain: "vdo2025.firebaseapp.com",
+  projectId: "vdo2025",
+  storageBucket: "vdo2025.firebasestorage.app",
+  messagingSenderId: "462662171509",
+  appId: "1:462662171509:web:333195b0c44908e7b5b13c"
 };
 
     // Initialize Firebase
@@ -1746,7 +1708,8 @@
         let allUsers = [];
 
         try {
-            const shiftsToFetch = ['shift1', 'shift2', 'shift3', 'shift4', 'shift5', 'shift6'];
+           // इसे बदलकर सिर्फ आपकी एक शिफ़्ट का आईडी कर दें
+            const shiftsToFetch = ['shift1'];
 
             for (const shiftId of shiftsToFetch) {
                const usersSnapshot = await db.collection('userResponses').doc(shiftId).collection('users').get({ source: 'server' });
@@ -1796,7 +1759,8 @@
     function displayFilteredLeaderboard() {
         if (allLeaderboardUsers.length === 0) return; // अगर डेटा नहीं है तो कुछ न करें
 
-        const shiftFilter = leaderboardShiftFilter.value;
+       // यह जांचता है कि 'leaderboardShiftFilter' मौजूद है या नहीं, अगर नहीं है, तो 'all' मान लेता है
+        const shiftFilter = leaderboardShiftFilter ? leaderboardShiftFilter.value : 'all';
         const categoryFilter = leaderboardCategoryFilter.value;
         const areaFilter = leaderboardAreaFilter.value;
 
@@ -3265,7 +3229,7 @@ if (copyStringBtn) {
                 .then(registration => { console.log('ServiceWorker registration successful'); })
                 .catch(error => { console.log('ServiceWorker registration failed: ', error); });
         });
-    }
+    } 
 </script>
 </body>
 </html>
